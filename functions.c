@@ -120,14 +120,14 @@ void simpleDebug(char *text, int typeFile)
 	}
 }
 
-char *iota(int num)
+char *itos(int num)
 {
 	char *string = (char *) malloc(sizeof(char) * STR_MAX_LENGTH);
 	sprintf(string, "%i", num);
 	return string;
 }
 
-char *fota(float num)
+char *ftos(float num)
 {
 	char *string = (char *) malloc(sizeof(char) * STR_MAX_LENGTH);
 	sprintf(string, "%f", num);
@@ -321,11 +321,11 @@ void asignacionTensor(sym_value_type *result, int posicion, value_info v1, value
 		v1.type = entry1.type;
 		if (isSameType(entry1.type, INT32_T))
 		{
-			v1.value = iota(((int *) entry1.elements)[aux]);
+			v1.value = itos(((int *) entry1.elements)[aux]);
 		}
 		else
 		{
-			v1.value = fota(((float *) entry1.elements)[aux]);
+			v1.value = ftos(((float *) entry1.elements)[aux]);
 		}
 	}
 	if (v2.lexema != NULL)
@@ -335,11 +335,11 @@ void asignacionTensor(sym_value_type *result, int posicion, value_info v1, value
 		v2.type = entry2.type;
 		if (isSameType(entry2.type, INT32_T))
 		{
-			v2.value = iota(((int *) entry2.elements)[aux]);
+			v2.value = itos(((int *) entry2.elements)[aux]);
 		}
 		else
 		{
-			v2.value = fota(((float *) entry2.elements)[aux]);
+			v2.value = ftos(((float *) entry2.elements)[aux]);
 		}
 	}
 	value_info finishVal;
@@ -551,7 +551,7 @@ int doAritmeticOperation(value_info v1, char *operand, value_info v2, value_info
 		int resInt;
 		if (intOperations(atoi(v1.value), atoi(v2.value), operand, &resInt))
 		{
-			finish_val->value = iota(resInt);
+			finish_val->value = itos(resInt);
 		}
 		else
 		{
@@ -567,7 +567,7 @@ int doAritmeticOperation(value_info v1, char *operand, value_info v2, value_info
 			float resFloat;
 			if (floatOperations(atof(v1.value), atof(v2.value), operand, &resFloat))
 			{
-				finish_val->value = fota(resFloat);
+				finish_val->value = ftos(resFloat);
 			}
 			else
 			{
@@ -584,9 +584,9 @@ int doAritmeticOperation(value_info v1, char *operand, value_info v2, value_info
 
 int doRelationalOperation(float num1, char *op, float num2)
 {
-	debug("%s\n", fota(num1), 1);
+	debug("%s\n", ftos(num1), 1);
 	debug("%s\n", op, 1);
-	debug("%s\n", fota(num2), 1);
+	debug("%s\n", ftos(num2), 1);
 	if (strcmp(op, OP_REL_HIGH) == 0)
 	{
 		simpleDebug("Estoy en >\n", 1);
@@ -771,11 +771,11 @@ int doTensorCalcs(char *nameVar1, char *nameVar2, char *operation, sym_value_typ
 					value_info v1;
 					v1.lexema = nameVar1;
 					v1.type = entry1.type;
-					v1.value = iota(i);
+					v1.value = itos(i);
 					value_info v2;
 					v2.lexema = nameVar2;
 					v2.type = entry2.type;
-					v2.value = iota(i);
+					v2.value = itos(i);
 					asignacionTensor(&(*tmp), i, v1, v2, operation);
 				}
 				return 0;
@@ -892,7 +892,7 @@ int doNumberProductTensor(char *number, char *type, char *nameTensor, sym_value_
 			v1.lexema = NULL;
 			value_info v2;
 			v2.type = entry.type;
-			v2.value = iota(i);
+			v2.value = itos(i);
 			v2.lexema = nameTensor;
 			asignacionTensor(&(*tmp), i, v1, v2, "*");
 		}
@@ -952,11 +952,11 @@ int doTensorProductTensor(char *nameVar1, char *nameVar2, sym_value_type *tmp)
 					{
 						value_info v1;
 						v1.type = matrix1.type;
-						v1.value = iota(i * colsM1 + k);
+						v1.value = itos(i * colsM1 + k);
 						v1.lexema = nameVar1;
 						value_info v2;
 						v2.type = matrix2.type;
-						v2.value = iota(k * colsM2 + j);
+						v2.value = itos(k * colsM2 + j);
 						v2.lexema = nameVar2;
 						asignacionTensor(tmp, rFinal * colsM2 + cFinal, v1, v2, "*");
 						if (isSameType(tmp->type, INT32_T))

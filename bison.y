@@ -439,10 +439,10 @@ lista_potencias : lista_potencias OP_ARIT_P1 terminal_aritmetico	{
 					}
 
 terminal_aritmetico : INTEGER	{
-					$$ = createValueInfo(iota($1), INT32_T, NULL);
+					$$ = createValueInfo(itos($1), INT32_T, NULL);
 				}
 	| FLOAT		{
-				$$ = createValueInfo(fota($1), FLOAT64_T, NULL);
+				$$ = createValueInfo(ftos($1), FLOAT64_T, NULL);
 			}
 	| id_arit 	{
 				$$ = createValueInfo($1.value, $1.type, $1.lexema);
@@ -476,7 +476,7 @@ terminal_aritmetico : INTEGER	{
 									}
 								}
 	| LENGTH STRING PARENTESIS_CERRADO	{
-							$$ = createValueInfo(iota(lenght($2)), INT32_T, NULL);
+							$$ = createValueInfo(itos(lenght($2)), INT32_T, NULL);
 						}
 
 id_arit : ID_ARIT	{ 
@@ -487,11 +487,11 @@ id_arit : ID_ARIT	{
 							sym_lookup($1.lexema, &res);
 							if (isSameType(res.type, INT32_T))
 							{
-								$$.value = iota(((int *) res.elements)[$1.calcIndex]);
+								$$.value = itos(((int *) res.elements)[$1.calcIndex]);
 							}
 							else
 							{
-								$$.value = fota(((float *) res.elements)[$1.calcIndex]);
+								$$.value = ftos(((float *) res.elements)[$1.calcIndex]);
 							}
 							$$.type = res.type;
 							$$.lexema = NULL;
@@ -535,29 +535,29 @@ expresion_booleana : expresion_booleana OP_BOOL expresion_booleana_base	{
 										{
 											if( ! atoi($1.value) || ! atoi($3.value))
 											{
-												$$ = createValueInfo(iota(0), BOOLEAN_T, $1.lexema);
+												$$ = createValueInfo(itos(0), BOOLEAN_T, $1.lexema);
 											}
 											else
 											{
-												$$ = createValueInfo(iota(1), BOOLEAN_T, $1.lexema);
+												$$ = createValueInfo(itos(1), BOOLEAN_T, $1.lexema);
 											}
 										}
 										else
 										{
 											if( atoi($1.value) || atoi($3.value))
 											{
-												$$ = createValueInfo(iota(1), BOOLEAN_T, $1.lexema);
+												$$ = createValueInfo(itos(1), BOOLEAN_T, $1.lexema);
 											}
 											else
 											{
-												$$ = createValueInfo(iota(0), BOOLEAN_T, $1.lexema);
+												$$ = createValueInfo(itos(0), BOOLEAN_T, $1.lexema);
 											}
 											
 										}
 									}
 		| NEGACION expresion_booleana_base	{
 								int res = negateBoolean(atoi($2.value));
-								$$ = createValueInfo(iota(res), BOOLEAN_T, $2.lexema);
+								$$ = createValueInfo(itos(res), BOOLEAN_T, $2.lexema);
 							}
 		| expresion_booleana_base	{ 
 							$$ = createValueInfo($1.value, BOOLEAN_T, $1.lexema);
@@ -567,7 +567,7 @@ expresion_booleana_base : lista_sumas OP_RELACIONAL lista_sumas {
 									if(isNumberType($1.type) && isNumberType($3.type) && isSameType($1.type, $3.type))
 									{
 										int res = doRelationalOperation(atof($1.value), $2, atof($3.value));
-										$$ = createValueInfo(iota(res), BOOLEAN_T, $1.lexema);
+										$$ = createValueInfo(itos(res), BOOLEAN_T, $1.lexema);
 									}
 									else
 									{
@@ -590,7 +590,7 @@ expresion_booleana_base : lista_sumas OP_RELACIONAL lista_sumas {
 						}
 
 terminal_booleano : BOOLEAN	{	
-					$$ = createValueInfo(iota($1), BOOLEAN_T, NULL);
+					$$ = createValueInfo(itos($1), BOOLEAN_T, NULL);
 				}
 		| PARENTESIS_ABIERTO expresion_booleana PARENTESIS_CERRADO	{
 											if (isSameType($2.type, BOOLEAN_T))

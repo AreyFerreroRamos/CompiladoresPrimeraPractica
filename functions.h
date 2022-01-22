@@ -31,12 +31,12 @@ void simpleDebug(char *text, int typeFile);
 /**
  * Convierte un entero a string.
  */
-char *iota(int num);
+char *itos(int num);
 
 /**
  * Convierte un float a string.
  */
-char *fota(float num);
+char *ftos(float num);
 
 /**
  * Reserva espacio en una variable char * para 200 carácteres como máximo y la devuleve.
