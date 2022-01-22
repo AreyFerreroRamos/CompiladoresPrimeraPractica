@@ -31,38 +31,38 @@ id {lletra}({lletra}|{digit}|_({lletra}|{digit}))*
 
 
 ({digit})+	{
-			debug("%s\n", yytext, 0);
-			yylval.enter = atoi(yytext);
-			return INTEGER;
-		}
+                debug("%s\n", yytext, 0);
+                yylval.enter = atoi(yytext);
+                return INTEGER;
+            }
 
 ({digit})+"."({digit})+(e(-)?({digit})+)?	{
-							debug("%s\n", yytext, 0);
-							yylval.real = atof(yytext);
-							return FLOAT;						
-						}
+                                                debug("%s\n", yytext, 0);
+                                                yylval.real = atof(yytext);
+                                                return FLOAT;
+                                            }
 
 (true|false)	{
-			debug("%s\n", yytext, 0);
-			yylval.boolea = strcmp(yytext,"true") ? false : true;
-			return BOOLEAN;
-		}
+                    debug("%s\n", yytext, 0);
+                    yylval.boolea = strcmp(yytext,"true") ? false : true;
+                    return BOOLEAN;
+                }
 
 (#(.)*|#=(.|\n)*=#) 	{
-				debug("COMMENT: %s\n", yytext, 0);
-			}
+                            debug("COMMENT: %s\n", yytext, 0);
+                        }
 
-"^"	{
+"^" {
 		debug("%s\n", yytext, 0);
 		yylval.cadena = strdup(yytext);
 		return OP_ARIT_P1;
 	}
 
 ("/"|"%")	{
-			debug("%s\n", yytext, 0);
-			yylval.cadena = strdup(yytext);
-			return OP_ARIT_P2;
-		}
+                debug("%s\n", yytext, 0);
+                yylval.cadena = strdup(yytext);
+                return OP_ARIT_P2;
+            }
 
 "*"	{
 		debug("%s\n", yytext, 0);
@@ -71,22 +71,22 @@ id {lletra}({lletra}|{digit}|_({lletra}|{digit}))*
 	}
 
 ("+"|"-")	{
-			debug("%s\n", yytext, 0);
-			yylval.cadena = strdup(yytext);
-			return OP_ARIT_P3;
-		}
+                debug("%s\n", yytext, 0);
+                yylval.cadena = strdup(yytext);
+                return OP_ARIT_P3;
+            }
 
 (">"|">="|"=="|"<="|"<"|"!=")	{
-					debug("%s\n", yytext, 0);
-					yylval.cadena = strdup(yytext);
-					return OP_RELACIONAL;
-				}
+                                    debug("%s\n", yytext, 0);
+                                    yylval.cadena = strdup(yytext);
+                                    return OP_RELACIONAL;
+                                }
 
 (&&|"||")	{
-			debug("%s\n", yytext, 0);
-			yylval.cadena = strdup(yytext);
-			return OP_BOOL;
-		}
+                debug("%s\n", yytext, 0);
+                yylval.cadena = strdup(yytext);
+                return OP_BOOL;
+            }
 
 "!"	{
 		debug("%s\n", yytext, 0);
@@ -109,15 +109,14 @@ id {lletra}({lletra}|{digit}|_({lletra}|{digit}))*
 	}
 
 "div("	{
-		debug("%s\n", yytext, 0);
-		return DIV;
-	}
+            debug("%s\n", yytext, 0);
+            return DIV;
+        }
 
 "length("	{
-			debug("%s\n", yytext, 0);
-			return LENGTH;
-		}	
-
+                debug("%s\n", yytext, 0);
+                return LENGTH;
+            }
 
 "="	{
 		debug("%s\n", yytext, 0);
@@ -142,63 +141,60 @@ id {lletra}({lletra}|{digit}|_({lletra}|{digit}))*
 	}
 
 {id}	{
-		if (assignFounded == false && corcheteOpenFounded == false)
-		{
-			debug("ID POINTER: %s\n", yytext, 0);
-			yylval.ident.lexema = strdup(yytext);
-			yylval.ident.lenght = strlen(yytext);
-			yylval.ident.line = yylineno;
-			return ID;
-		}
-		else
-		{
-			debug("ID ARIT: %s\n", yytext, 0);
-			sym_value_type entry;
-			int response =  sym_lookup(yytext, &entry);
-			if (response == SYMTAB_OK)
-			{
-				
-				value_info v;
-					//SI EL ID_ARIT ES TENSOR
-				if (entry.value == NULL) 
-				{
-					v = createValueInfo(NULL, entry.type, yytext);
-				}
-					//SI EL ID_ARIT ES DE DIM 0
-				else 
-				{
-					v = createValueInfo(entry.value, entry.type, NULL);
-				}				
-				if(isSameType(v.type, INT32_T) || isSameType(v.type, FLOAT64_T))
-				{
-					yylval.operand = v;
-					return ID_ARIT;
-				}
-				else if (isSameType(v.type, STRING_T))
-				{
-					yylval.cadena = v.value;
-					return STRING;
-				}
-				else
-				{
-					yylval.boolea = atoi(v.value);
-					return BOOLEAN;
-				}
-			}
-			else
-			{
-				char * error = allocateSpaceForMessage();
-				sprintf(error, "The id %s is not initialized", yytext);
-				yyerror(error);	
-			}
-		}	
-	}
+            if (assignFounded == false && corcheteOpenFounded == false)
+            {
+                debug("ID POINTER: %s\n", yytext, 0);
+                yylval.ident.lexema = strdup(yytext);
+                yylval.ident.lenght = strlen(yytext);
+                yylval.ident.line = yylineno;
+                return ID;
+            }
+            else
+            {
+                debug("ID ARIT: %s\n", yytext, 0);
+                sym_value_type entry;
+                int response = sym_lookup(yytext, &entry);
+                if (response == SYMTAB_OK)
+                {
+                    value_info v;
+                    if (entry.value == NULL)
+                    {   // SI EL ID_ARIT ES TENSOR
+                        v = createValueInfo(NULL, entry.type, yytext);
+                    }
+                    else
+                    {    // SI EL ID_ARIT ES DE DIM 0
+                        v = createValueInfo(entry.value, entry.type, NULL);
+                    }
+                    if (isSameType(v.type, INT32_T) || isSameType(v.type, FLOAT64_T))
+                    {
+                        yylval.operand = v;
+                        return ID_ARIT;
+                    }
+                    else if (isSameType(v.type, STRING_T))
+                    {
+                        yylval.cadena = v.value;
+                        return STRING;
+                    }
+                    else
+                    {
+                        yylval.boolea = atoi(v.value);
+                        return BOOLEAN;
+                    }
+                }
+                else
+                {
+                    char * error = allocateSpaceForMessage();
+                    sprintf(error, "The id %s is not initialized.", yytext);
+                    yyerror(error);
+                }
+            }
+        }
 
 \"(\\.|[^\"])*\"	{
-				debug("%s\n", yytext, 0);
-				yylval.cadena = strdup(yytext);
-				return STRING;
-			}
+                        debug("%s\n", yytext, 0);
+                        yylval.cadena = strdup(yytext);
+                        return STRING;
+                    }
 
 \n	{
 		debug("%s\n", yytext, 0);

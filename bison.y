@@ -10,15 +10,14 @@
   extern int yylex();
   extern void yyerror(char *);
 
-  //Variables necesarias para la inicialización de un tensor
+  	// Variables necesarias para la inicialización de un tensor.
   int *vector_dims_tensor;	// Vector con el número de elementos de cada dimensión del tensor.
   int num_dims_tensor = 0;	// Número de dimensiones del tensor.
   bool *ampliar_vector_dims; 	// Vector de booleanos para limitar la ampliación de memoria del vector de dimensiones a una sola por dimensión.
 
-  //Variables para controlar el flujo de variables temporales en la symtab
+  	// Variables para controlar el flujo de variables temporales en la symtab.
   char **list_tmp_variables_symtab;
   int num_tmp_variable = 0;
-
 %}
 
 %code requires {
@@ -411,21 +410,21 @@ op_arit_p2: OP_ARIT_P2	{
 			}
 
 lista_potencias : lista_potencias OP_ARIT_P1 terminal_aritmetico	{
-									if (isNumberType($3.type))
-									{
-										$$.value = (char *) malloc(sizeof(char) * FLOAT_MAX_LENGTH_STR);
-										if (!doAritmeticOperation($1, $2, $3, &$$))
+										if (isNumberType($3.type))
 										{
-											yyerror("Something wrong with operation.");
+											$$.value = (char *) malloc(sizeof(char) * FLOAT_MAX_LENGTH_STR);
+											if (!doAritmeticOperation($1, $2, $3, &$$))
+											{
+												yyerror("Something wrong with operation.");
+											}
+										}
+										else
+										{
+											char * error = allocateSpaceForMessage();
+											sprintf(error, "Cannot do operation with %s", $3.value);
+											yyerror(error);
 										}
 									}
-									else
-									{
-										char * error = allocateSpaceForMessage();
-										sprintf(error, "Cannot do operation with %s", $3.value);
-										yyerror(error);
-									}
-								}
 		| terminal_aritmetico	{
 						if (isNumberType($1.type))
 						{

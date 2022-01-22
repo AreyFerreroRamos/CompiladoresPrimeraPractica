@@ -17,9 +17,7 @@ extern int num_tmp_variable;
 int init_analisi_lexic(char *file_name)
 {
 	int error;
-
 	yyin = fopen(file_name, "r");
-
 	if (yyin == NULL)
 	{
 		error = EXIT_FAILURE;
@@ -34,9 +32,7 @@ int init_analisi_lexic(char *file_name)
 int init_analisi_sintactic(char *filename)
 {
 	int error = EXIT_SUCCESS;
-
 	yyout = fopen(filename, "w");
-
 	if (yyout == NULL)
 	{
 		error = EXIT_FAILURE;
@@ -47,7 +43,6 @@ int init_analisi_sintactic(char *filename)
 int analisi_semantic()
 {
 	int error;
-
 	if (yyparse() == 0)
 	{
 		error = EXIT_SUCCESS;
@@ -62,9 +57,7 @@ int analisi_semantic()
 int end_analisi_lexic()
 {
 	int error;
-
 	error = fclose(yyin);
-
 	if (error == 0)
 	{
 		error = EXIT_SUCCESS;
@@ -79,9 +72,7 @@ int end_analisi_lexic()
 int end_analisi_sintactic()
 {
 	int error;
-
 	error = fclose(yyout);
-
 	if (error == 0)
 	{
 		error = EXIT_SUCCESS;
@@ -103,12 +94,12 @@ void yyerror(char *explanation)
 
 void debug(char *text, char *var, int typeFile)
 {
-	// flex
+	    // flex
 	if (typeFile == 0)
 	{
-		printf(text, var);
+		//printf(text, var);
 	}
-	// bison
+	    // bison
 	else
 	{
 		// printf(text, var);
@@ -117,12 +108,12 @@ void debug(char *text, char *var, int typeFile)
 
 void simpleDebug(char *text, int typeFile)
 {
-	// flex
+	    // flex
 	if (typeFile == 0)
 	{
 		// printf(text);
 	}
-	// bison
+	    // bison
 	else
 	{
 		// printf(text);
@@ -132,7 +123,6 @@ void simpleDebug(char *text, int typeFile)
 char *iota(int num)
 {
 	char *string = (char *) malloc(sizeof(char) * STR_MAX_LENGTH);
-
 	sprintf(string, "%i", num);
 	return string;
 }
@@ -140,15 +130,13 @@ char *iota(int num)
 char *fota(float num)
 {
 	char *string = (char *) malloc(sizeof(char) * STR_MAX_LENGTH);
-
 	sprintf(string, "%f", num);
 	return string;
 }
 
 char *allocateSpaceForMessage()
 {
-	char *message;
-	message = (char *) malloc(sizeof(char) * STR_MAX_LENGTH);
+	char *message = (char *) malloc(sizeof(char) * STR_MAX_LENGTH);
 	return message;
 }
 
@@ -187,7 +175,6 @@ value_info createValueInfo(char *value, char *type, char *lexema)
 tensor_info createTensorInfo(int index_dim, int calcIndex, char *lexema)
 {
 	tensor_info aux;
-
 	aux.index_dim = index_dim;
 	aux.calcIndex = calcIndex;
 	if (lexema != NULL)
@@ -204,7 +191,6 @@ tensor_info createTensorInfo(int index_dim, int calcIndex, char *lexema)
 char *getIdName(char *idWithAssign)
 {
 	int sentinel, i;
-
 	for (i = 0; i < strlen(idWithAssign); i++)
 	{
 		if (idWithAssign[i] == ' ' || idWithAssign[i] == '\t' || idWithAssign[i] == '=')
@@ -241,10 +227,8 @@ int getDim(char *key, int index_dim)
 
 void invertVector(int *vector, int dim)
 {
-
 	int aux;
 	int i;
-
 	for (i = 0; i < dim / 2; i++)
 	{	// Invertir el vector.
 		aux = vector[i];
@@ -329,7 +313,6 @@ int calculateSizeType(char *type)
 
 void asignacionTensor(sym_value_type *result, int posicion, value_info v1, value_info v2, char *op)
 {
-
 	sym_value_type entry1, entry2;
 	if (v1.lexema != NULL)
 	{
@@ -515,7 +498,6 @@ void saveTmpTensorInSymTab(value_info *val, char *type1, char *type2, sym_value_
 char *generateTmpTensorId()
 {
 	char *id;
-	
 	if (list_tmp_variables_symtab == NULL)
 	{
 		list_tmp_variables_symtab = malloc(sizeof(char *));
@@ -597,7 +579,6 @@ int doAritmeticOperation(value_info v1, char *operand, value_info v2, value_info
 			return 0;
 		}
 	}
-
 	return 1;
 }
 
@@ -724,7 +705,6 @@ int lenght(char *key)
 {
 	sym_value_type entry;
 	int response = sym_lookup(key, &entry);
-
 	if (response == SYMTAB_OK)
 	{
 		return entry.size;
@@ -785,7 +765,6 @@ int doTensorCalcs(char *nameVar1, char *nameVar2, char *operation, sym_value_typ
 				tmp->num_dim = entry1.num_dim;
 				tmp->elem_dims = entry1.elem_dims;
 				tmp->elements = malloc(tmp->size);
-
 				int cont = tmp->size / calculateSizeType(tmp->type);
 				for (int i = 0; i < cont; i++)
 				{	// Por cada elemento hacemos operación.
@@ -802,14 +781,12 @@ int doTensorCalcs(char *nameVar1, char *nameVar2, char *operation, sym_value_typ
 				return 0;
 			}
 			else
-			{
-				// Tensores con diferentes dimensiones.
+			{   // Tensores con diferentes dimensiones.
 				return -4;
 			}
 		}
 		else
-		{
-			// Alguna de las variables buscadas no existe.
+		{   // Alguna de las variables buscadas no existe.
 			return -3;
 		}
 	}
@@ -960,8 +937,7 @@ int doTensorProductTensor(char *nameVar1, char *nameVar2, sym_value_type *tmp)
 			for (int i = 0; i < rowsM1; i++)
 			{
 				for (int j = 0; j < colsM2; j++)
-				{
-					// Si transponemos el vector para poder multiplicarlo hay que trasponer los índices.
+				{   // Si transponemos el vector para poder multiplicarlo hay que trasponer los índices.
 					rFinal = colsM2 == 1 ? j : i;
 					cFinal = colsM2 == 1 ? i : j;
 					if (isSameType(tmp->type, INT32_T))
@@ -1005,11 +981,10 @@ int doTensorProductTensor(char *nameVar1, char *nameVar2, sym_value_type *tmp)
 			return 0;
 		}
 		else
-		{
-			// NO EXISTE NAMEVAR2.
+		{   // NO EXISTE NAMEVAR2.
 			return -2;
 		}
 	}
-	// NO EXISTE NAMEVAR1.
+	    // NO EXISTE NAMEVAR1.
 	return -1;
 }
