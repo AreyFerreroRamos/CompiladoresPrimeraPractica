@@ -10,8 +10,10 @@
   #include <stdio.h>
   #include <stdlib.h>
   #include <stdbool.h>
-  #include <string.h> 
+  #include <string.h>
+
   #include "bison.tab.h"
+  #include "utils.h"
   #include "functions.h"
 
   extern void yyerror(char *);

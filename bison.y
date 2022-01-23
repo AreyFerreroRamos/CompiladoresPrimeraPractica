@@ -4,6 +4,10 @@
   #include <stdbool.h>
   #include <string.h>
 
+  #include "tipus.h"
+  #include "functions.h"
+  #include "utils.h"
+
   #define YYLMAX 100
 
   extern FILE *yyout;
@@ -22,6 +26,7 @@
 
 %code requires {
   #include "functions.h"
+  #include "utils.h"
   #include "tipus.h"
 }
 

@@ -2,143 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+
 #include "functions.h"
 
-extern int yyparse();
-extern FILE *yyin;
 extern FILE *yyout;
-extern int yylineno;
 
 extern char **list_tmp_variables_symtab;
 extern int num_tmp_variable;
 
-// FUNCIONES BASE PARA EJECUCIÓN DEL COMPILADOR
-
-int init_analisi_lexic(char *file_name)
-{
-	int error;
-	yyin = fopen(file_name, "r");
-	if (yyin == NULL)
-	{
-		error = EXIT_FAILURE;
-	}
-	else
-	{
-		error = EXIT_SUCCESS;
-	}
-	return error;
-}
-
-int init_analisi_sintactic(char *filename)
-{
-	int error = EXIT_SUCCESS;
-	yyout = fopen(filename, "w");
-	if (yyout == NULL)
-	{
-		error = EXIT_FAILURE;
-	}
-	return error;
-}
-
-int analisi_semantic()
-{
-	int error;
-	if (yyparse() == 0)
-	{
-		error = EXIT_SUCCESS;
-	}
-	else
-	{
-		error = EXIT_FAILURE;
-	}
-	return error;
-}
-
-int end_analisi_lexic()
-{
-	int error;
-	error = fclose(yyin);
-	if (error == 0)
-	{
-		error = EXIT_SUCCESS;
-	}
-	else
-	{
-		error = EXIT_FAILURE;
-	}
-	return error;
-}
-
-int end_analisi_sintactic()
-{
-	int error;
-	error = fclose(yyout);
-	if (error == 0)
-	{
-		error = EXIT_SUCCESS;
-	}
-	else
-	{
-		error = EXIT_FAILURE;
-	}
-	return error;
-}
-
-void yyerror(char *explanation)
-{
-	fprintf(stderr, "Error: %s, in line %d\n", explanation, yylineno);
-	exit(EXIT_FAILURE);
-}
-
 // FUNCIONES DE UTILIDAD
-
-void debug(char *text, char *var, int typeFile)
-{
-	    // flex
-	if (typeFile == 0)
-	{
-		//printf(text, var);
-	}
-	    // bison
-	else
-	{
-		// printf(text, var);
-	}
-}
-
-void simpleDebug(char *text, int typeFile)
-{
-	    // flex
-	if (typeFile == 0)
-	{
-		// printf(text);
-	}
-	    // bison
-	else
-	{
-		// printf(text);
-	}
-}
-
-char *itos(int num)
-{
-	char *string = (char *) malloc(sizeof(char) * STR_MAX_LENGTH);
-	sprintf(string, "%i", num);
-	return string;
-}
-
-char *ftos(float num)
-{
-	char *string = (char *) malloc(sizeof(char) * STR_MAX_LENGTH);
-	sprintf(string, "%f", num);
-	return string;
-}
-
-char *allocateSpaceForMessage()
-{
-	char *message = (char *) malloc(sizeof(char) * STR_MAX_LENGTH);
-	return message;
-}
 
 int negateBoolean(int boolean)
 {
@@ -295,118 +167,6 @@ void castTensorToVoidPointer(void *ptr, char *type1, int num_element1, void *ele
 	}
 }
 
-int calculateSizeType(char *type)
-{
-	if (isSameType(type, FLOAT64_T))
-	{
-		return 8;
-	}
-	else if (isSameType(type, INT32_T))
-	{
-		return 4;
-	}
-	else
-	{
-		return 1;
-	}
-}
-
-void asignacionTensor(sym_value_type *result, int posicion, value_info v1, value_info v2, char *op)
-{
-	sym_value_type entry1, entry2;
-	if (v1.lexema != NULL)
-	{
-		sym_lookup(v1.lexema, &entry1);
-		int aux = atoi(v1.value);
-		v1.type = entry1.type;
-		if (isSameType(entry1.type, INT32_T))
-		{
-			v1.value = itos(((int *) entry1.elements)[aux]);
-		}
-		else
-		{
-			v1.value = ftos(((float *) entry1.elements)[aux]);
-		}
-	}
-	if (v2.lexema != NULL)
-	{
-		sym_lookup(v2.lexema, &entry2);
-		int aux = atoi(v2.value);
-		v2.type = entry2.type;
-		if (isSameType(entry2.type, INT32_T))
-		{
-			v2.value = itos(((int *) entry2.elements)[aux]);
-		}
-		else
-		{
-			v2.value = ftos(((float *) entry2.elements)[aux]);
-		}
-	}
-	value_info finishVal;
-	doAritmeticOperation(v1, op, v2, &finishVal);
-	if (isSameType(result->type, INT32_T))
-	{
-		if (isSameType(finishVal.type, INT32_T))
-		{
-			((int *) result->elements)[posicion] = atoi(finishVal.value);
-		}
-		else
-		{
-			((int *) result->elements)[posicion] = (int) atof(finishVal.value);
-		}
-	}
-	else
-	{
-		if (isSameType(finishVal.type, INT32_T))
-		{
-			((float *) result->elements)[posicion] = atoi(finishVal.value);
-		}
-		else
-		{
-			((float *) result->elements)[posicion] = atof(finishVal.value);
-		}
-	}
-}
-
-int isPossibleTensorProduct(int *elemDims1, int numDims1, int *elemDims2, int numDims2)
-{
-	if (numDims1 <= 2 && numDims2 <= 2)
-	{	// Si son matrices o vectores.
-		int nColsMatrix1, nRowsMatrix2;
-		if (numDims1 == 1)
-		{
-			nColsMatrix1 = elemDims1[0];
-		}
-		else
-		{
-			nColsMatrix1 = elemDims1[1];
-		}
-		nRowsMatrix2 = elemDims2[0];
-		if (nColsMatrix1 == nRowsMatrix2)
-		{
-			return 0;
-		}
-		return -1;
-	}
-	return -2;
-}
-
-int maxNum(float a, float b)
-{
-	if (a > b)
-	{
-		return 1;
-	}
-	else if (a == b)
-	{
-		return 0;
-	}
-	else
-	{
-		return -1;
-	}
-}
-
 void printTensor(char *nameVar, sym_value_type tensor, int inFile)
 {
 	if (inFile)
@@ -462,16 +222,6 @@ void printSymValueType(sym_value_type entry)
 	printf("------------------------\n\n");
 }
 
-int getAcumElemDim(int *elem_dim, int num_dim)
-{
-	int acum = 1;
-	for (int i = 0; i < num_dim; i++)
-	{
-		acum *= elem_dim[i];
-	}
-	return acum;
-}
-
 void saveTmpTensorInSymTab(value_info *val, char *type1, char *type2, sym_value_type entry)
 {
 	char *id = generateTmpTensorId();
@@ -497,20 +247,20 @@ void saveTmpTensorInSymTab(value_info *val, char *type1, char *type2, sym_value_
 
 char *generateTmpTensorId()
 {
-	char *id;
-	if (list_tmp_variables_symtab == NULL)
-	{
-		list_tmp_variables_symtab = malloc(sizeof(char *));
-	}
-	else
-	{
-		list_tmp_variables_symtab = realloc(list_tmp_variables_symtab, (num_tmp_variable + 1) * sizeof(char *));
-	}
-	id = (char *) malloc(sizeof(char) * TMP_ID_MAX_LENGTH);
-	sprintf(id, "%s%i", TMP_BASE_ID, num_tmp_variable);
-	list_tmp_variables_symtab[num_tmp_variable] = id;
-	num_tmp_variable++;
-	return id;
+    char *id;
+    if (list_tmp_variables_symtab == NULL)
+    {
+        list_tmp_variables_symtab = malloc(sizeof(char *));
+    }
+    else
+    {
+        list_tmp_variables_symtab = realloc(list_tmp_variables_symtab, (num_tmp_variable + 1) * sizeof(char *));
+    }
+    id = (char *) malloc(sizeof(char) * TMP_ID_MAX_LENGTH);
+    sprintf(id, "%s%i", TMP_BASE_ID, num_tmp_variable);
+    list_tmp_variables_symtab[num_tmp_variable] = id;
+    num_tmp_variable++;
+    return id;
 }
 
 void clearTmpTensorId()
@@ -528,16 +278,61 @@ void clearTmpTensorId()
 	num_tmp_variable = 0;
 }
 
-// FUNCIONES DE CONTROL DE ERRORES
-
-int isSameType(char *type1, char *type2)
+void asignacionTensor(sym_value_type *result, int posicion, value_info v1, value_info v2, char *op)
 {
-	return (strcmp(type1, type2) == 0);
-}
-
-int isNumberType(char *type)
-{
-	return (strcmp(type, INT32_T) == 0 || strcmp(type, FLOAT64_T) == 0);
+    sym_value_type entry1, entry2;
+    if (v1.lexema != NULL)
+    {
+        sym_lookup(v1.lexema, &entry1);
+        int aux = atoi(v1.value);
+        v1.type = entry1.type;
+        if (isSameType(entry1.type, INT32_T))
+        {
+            v1.value = itos(((int *) entry1.elements)[aux]);
+        }
+        else
+        {
+            v1.value = ftos(((float *) entry1.elements)[aux]);
+        }
+    }
+    if (v2.lexema != NULL)
+    {
+        sym_lookup(v2.lexema, &entry2);
+        int aux = atoi(v2.value);
+        v2.type = entry2.type;
+        if (isSameType(entry2.type, INT32_T))
+        {
+            v2.value = itos(((int *) entry2.elements)[aux]);
+        }
+        else
+        {
+            v2.value = ftos(((float *) entry2.elements)[aux]);
+        }
+    }
+    value_info finishVal;
+    doAritmeticOperation(v1, op, v2, &finishVal);
+    if (isSameType(result->type, INT32_T))
+    {
+        if (isSameType(finishVal.type, INT32_T))
+        {
+            ((int *) result->elements)[posicion] = atoi(finishVal.value);
+        }
+        else
+        {
+            ((int *) result->elements)[posicion] = (int) atof(finishVal.value);
+        }
+    }
+    else
+    {
+        if (isSameType(finishVal.type, INT32_T))
+        {
+            ((float *) result->elements)[posicion] = atoi(finishVal.value);
+        }
+        else
+        {
+            ((float *) result->elements)[posicion] = atof(finishVal.value);
+        }
+    }
 }
 
 // FUNCIONES PARA REALIZAR OPERACIONES
@@ -618,87 +413,6 @@ int doRelationalOperation(float num1, char *op, float num2)
 		return num1 != num2;
 	}
 	return 0;
-}
-
-int intOperations(int num1, int num2, char *operand, int *res)
-{
-	if (strcmp(operand, OP_ARIT_SUMA) == 0)
-	{
-		simpleDebug("Estoy en suma\n", 1);
-		*res = num1 + num2;
-	}
-	else if (strcmp(operand, OP_ARIT_RESTA) == 0)
-	{
-		simpleDebug("Estoy en resta\n", 1);
-		*res = num1 - num2;
-	}
-	else if (strcmp(operand, OP_ARIT_MULT) == 0)
-	{
-		simpleDebug("Estoy en producto\n", 1);
-		*res = num1 * num2;
-	}
-	else if (strcmp(operand, OP_ARIT_DIV) == 0)
-	{
-		simpleDebug("Estoy en division\n", 1);
-		if (num2 != 0)
-		{
-			*res = num1 / num2;
-		}
-		else
-		{
-			return 0;
-		}
-	}
-	else if (strcmp(operand, OP_ARIT_MOD) == 0)
-	{
-		simpleDebug("Estoy en modulo\n", 1);
-		if (num2 != 0)
-		{
-			*res = num1 % num2;
-		}
-		else
-		{
-			return 0;
-		}
-	}
-	else if (strcmp(operand, OP_ARIT_POTENCIA) == 0)
-	{
-		simpleDebug("Estoy en la potencia\n", 1);
-		*res = (int) pow((double) num1, (double) num2);
-	}
-	return 1;
-}
-
-int floatOperations(float num1, float num2, char *operand, float *res)
-{
-	if (strcmp(operand, OP_ARIT_SUMA) == 0)
-	{
-		*res = num1 + num2;
-	}
-	else if (strcmp(operand, OP_ARIT_RESTA) == 0)
-	{
-		*res = num1 - num2;
-	}
-	else if (strcmp(operand, OP_ARIT_MULT) == 0)
-	{
-		*res = num1 * num2;
-	}
-	else if (strcmp(operand, OP_ARIT_DIV) == 0)
-	{
-		if (num2 != 0)
-		{
-			*res = num1 / num2;
-		}
-		else
-		{
-			return 0;
-		}
-	}
-	else if (strcmp(operand, OP_ARIT_POTENCIA) == 0)
-	{
-		*res = (float) pow((double) num1, (double) num2);
-	}
-	return 1;
 }
 
 int lenght(char *key)
