@@ -43,6 +43,12 @@ char *allocateSpaceForMessage();
  */
 int calculateSizeType(char *type);
 
+/**
+ * Dado un texto con "%s donde quiera poner un argumento, el numero de argumentos, y los argumentos
+ * devuelve un string con los argumentos dentro del mensaje.
+ */
+char *generateString(char *message, int nArgs, ...);
+
 // FUNCIONES DE CONTROL DE ERRORES
 
 /**

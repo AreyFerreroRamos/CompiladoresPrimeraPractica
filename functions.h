@@ -9,6 +9,12 @@
 // FUNCIONES DE UTILIDAD
 
 /**
+ * Dada una cadena de carácteres, se retiran las comillas que
+ * la delimitan para facilitar la operación de concatenación.
+ */
+char *removeQuotationMarks(char *string1);
+
+/**
  * Dado un booleano (0/1) devuelve su contrario.
  */
 int negateBoolean(int boolean);

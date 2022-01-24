@@ -194,7 +194,7 @@ id {lletra}({lletra}|{digit}|_({lletra}|{digit}))*
 
 \"(\\.|[^\"])*\"	{
                         debug("%s\n", yytext, 0);
-                        yylval.cadena = strdup(yytext);
+                        yylval.cadena = removeQuotationMarks(yytext);
                         return STRING;
                     }
 

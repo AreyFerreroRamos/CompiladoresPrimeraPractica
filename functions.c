@@ -12,6 +12,13 @@ extern int num_tmp_variable;
 
 // FUNCIONES DE UTILIDAD
 
+char *removeQuotationMarks(char *string1)
+{
+    char *string2 = allocateSpaceForMessage(strlen(string1) - 1);
+    strlcpy(string2, &string1[1], strlen(string1) - 1);
+    return string2;
+}
+
 int negateBoolean(int boolean)
 {
 	if (boolean == 0)

@@ -197,7 +197,7 @@ asignacion : ID ASSIGN expresion_aritmetica	{
 						{
 							yyerror("Error al guardar en symtab.");
 						}
-						fprintf(yyout, "ID: %s pren per valor: %s\n", $1.lexema, (char *) entry.value);
+						fprintf(yyout, "ID: %s pren per valor: \"%s\"\n", $1.lexema, (char *) entry.value);
 					}
 	| ID ASSIGN tensor	{	
 					sym_value_type entry;
@@ -257,14 +257,7 @@ lista_indices : lista_indices COMA lista_sumas	{
 		     					}
 
 concatenacion : concatenacion ASTERISCO STRING 	{
-							$$ = allocateSpaceForMessage(strlen($1) + strlen($3) - 2);
-							char * var = allocateSpaceForMessage(strlen($1));
-							strlcpy(var, &$1[0], strlen($1));
-							strcat($$, var);
-							free(var);
-							var = allocateSpaceForMessage(strlen($3));
-							strlcpy(var, &$3[1], strlen($3));
-							strcat($$, var);
+							$$ = generateString("%s%s", 2, $1, $3);
 						}
 		| STRING 	{
 					$$ = strdup($1);
