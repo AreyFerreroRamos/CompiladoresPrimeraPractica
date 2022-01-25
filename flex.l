@@ -46,7 +46,7 @@ id {lletra}({lletra}|{digit}|_({lletra}|{digit}))*
 
 (true|false)	{
                     debug("%s\n", yytext, 0);
-                    yylval.boolea = strcmp(yytext,"true") ? false : true;
+                    yylval.cadena = strdup(yytext);
                     return BOOLEAN;
                 }
 
@@ -84,16 +84,20 @@ id {lletra}({lletra}|{digit}|_({lletra}|{digit}))*
                                     return OP_RELACIONAL;
                                 }
 
-(&&|"||")	{
-                debug("%s\n", yytext, 0);
-                yylval.cadena = strdup(yytext);
-                return OP_BOOL;
-            }
-
 "!"	{
 		debug("%s\n", yytext, 0);
 		return NEGACION;
 	}
+
+&&  {
+        debug("%s\n", yytext, 0);
+        return OP_BOOL_AND;
+    }
+
+"||"	{
+            debug("%s\n", yytext, 0);
+            return OP_BOOL_OR;
+        }
 
 "("	{
 		debug("%s\n", yytext, 0);
@@ -179,7 +183,7 @@ id {lletra}({lletra}|{digit}|_({lletra}|{digit}))*
                     }
                     else
                     {
-                        yylval.boolea = atoi(v.value);
+                        yylval.cadena = v.value;
                         return BOOLEAN;
                     }
                 }

@@ -13,6 +13,9 @@
 
 #define IDENT_T "Ident"
 
+#define TRUE_VALUE "true"
+#define FALSE_VALUE "false"
+
 #define OP_ARIT_SUMA "+"
 #define OP_ARIT_RESTA "-"
 #define OP_ARIT_MULT "*"
@@ -27,16 +30,13 @@
 #define OP_REL_EQUAL "=="
 #define OP_REL_DIFF "!="
 
-#define OP_BOOL_AND "&&"
-#define OP_BOOL_OR "||"
-
 #define TMP_BASE_ID "_tmp_"
 #define TMP_ID_MAX_LENGTH 10
 
 typedef struct
 {
+    char *value;    // Valor del elemento.
 	char *type;     // Tipo del elemenento.
-	char *value;    // Valor del elemento.
 	char *lexema;   // Nombre de var en caso de ser ID_ARIT.
 } value_info;
 

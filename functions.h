@@ -17,7 +17,7 @@ char *removeQuotationMarks(char *string1);
 /**
  * Dado un booleano (0/1) devuelve su contrario.
  */
-int negateBoolean(int boolean);
+char *negateBoolean(char *boolean);
 
 /**
  * Dados los datos necesarios para crear una entrada en la symtab,
@@ -101,10 +101,10 @@ void asignacionTensor(sym_value_type *result, int posicion, value_info v1, value
 int doAritmeticOperation(value_info v1, char *operand, value_info v2, value_info *finish_val);
 
 /**
- * Dados dos numeros y un operando relacional devuelve el resultado de la expresión
- * "num1 op num2".
+ * Dados dos numeros y un operando relacional
+ * devuelve el resultado de la expresión "num1 op num2".
  */
-int doRelationalOperation(float num1, char *op, float num2);
+char *doRelationalOperation(value_info v1, char *op, value_info v2);
 
 /**
  * Dado un string comprueba si es una key de la tabla de simbolos.

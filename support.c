@@ -214,3 +214,59 @@ int floatOperations(float num1, float num2, char *operand, float *res)
     }
     return 1;
 }
+
+int intRelationalOperation(int num1, char *op, int num2)
+{
+    if (isSameType(op, OP_REL_HIGH))
+    {
+        return num1 > num2;
+    }
+    if (isSameType(op, OP_REL_HE))
+    {
+        return num1 >= num2;
+    }
+    if (isSameType(op, OP_REL_LESS))
+    {
+        return num1 < num2;
+    }
+    if (isSameType(op, OP_REL_LE))
+    {
+        return num1 <= num2;
+    }
+    if (isSameType(op, OP_REL_EQUAL))
+    {
+        return num1 == num2;
+    }
+    if (isSameType(op, OP_REL_DIFF))
+    {
+        return num1 != num2;
+    }
+}
+
+int floatRelationalOperation(float num1, char *op, float num2)
+{
+    if (isSameType(op, OP_REL_HIGH))
+    {
+        return num1 > num2;
+    }
+    if (isSameType(op, OP_REL_HE))
+    {
+        return num1 >= num2;
+    }
+    if (isSameType(op, OP_REL_LESS))
+    {
+        return num1 < num2;
+    }
+    if (isSameType(op, OP_REL_LE))
+    {
+        return num1 <= num2;
+    }
+    if (isSameType(op, OP_REL_EQUAL))
+    {
+        return num1 == num2;
+    }
+    if (isSameType(op, OP_REL_DIFF))
+    {
+        return num1 != num2;
+    }
+}

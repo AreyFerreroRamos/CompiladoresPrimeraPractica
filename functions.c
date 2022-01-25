@@ -19,13 +19,13 @@ char *removeQuotationMarks(char *string1)
     return string2;
 }
 
-int negateBoolean(int boolean)
+char *negateBoolean(char *boolean)
 {
-	if (boolean == 0)
+	if (isSameType(boolean, TRUE_VALUE))
 	{
-		return 1;
+		return FALSE_VALUE;
 	}
-	return 0;
+	return TRUE_VALUE;
 }
 
 value_info createValueInfo(char *value, char *type, char *lexema)
@@ -384,42 +384,22 @@ int doAritmeticOperation(value_info v1, char *operand, value_info v2, value_info
 	return 1;
 }
 
-int doRelationalOperation(float num1, char *op, float num2)
+char *doRelationalOperation(value_info v1, char *op, value_info v2)
 {
-	debug("%s\n", ftos(num1), 1);
-	debug("%s\n", op, 1);
-	debug("%s\n", ftos(num2), 1);
-	if (strcmp(op, OP_REL_HIGH) == 0)
-	{
-		simpleDebug("Estoy en >\n", 1);
-		return num1 > num2;
-	}
-	if (strcmp(op, OP_REL_HE) == 0)
-	{
-		simpleDebug("Estoy en >=\n", 1);
-		return num1 >= num2;
-	}
-	if (strcmp(op, OP_REL_LESS) == 0)
-	{
-		simpleDebug("Estoy en <\n", 1);
-		return num1 < num2;
-	}
-	if (strcmp(op, OP_REL_LE) == 0)
-	{
-		simpleDebug("Estoy en <=\n", 1);
-		return num1 <= num2;
-	}
-	if (strcmp(op, OP_REL_EQUAL) == 0)
-	{
-		simpleDebug("Estoy en ==\n", 1);
-		return num1 == num2;
-	}
-	if (strcmp(op, OP_REL_DIFF) == 0)
-	{
-		simpleDebug("Estoy en !=\n", 1);
-		return num1 != num2;
-	}
-	return 0;
+    int res;
+    if (isSameType(v1.type, INT32_T))
+    {
+        res = intRelationalOperation(atoi(v1.value), op, atoi(v2.value));
+    }
+    else
+    {
+        res = floatRelationalOperation(atof(v1.value), op, atof(v2.value));
+    }
+    if (res == 1)
+    {
+        return TRUE_VALUE;
+    }
+    return FALSE_VALUE;
 }
 
 int lenght(char *key)

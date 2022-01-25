@@ -39,7 +39,6 @@
 	int enter;
 	float real;
 	char *cadena;
-	bool boolea;
 	value_info operand;
 	tensor_info tensor_info;
 	tensor_ini_info tensor_ini_info;
@@ -47,15 +46,14 @@
 	void *no_definit;
 }
 
-%token <no_definit> ASSIGN
+%token <no_definit> ASSIGN OP_BOOL_AND OP_BOOL_OR NEGACION
 %token <enter> INTEGER
 %token <real> FLOAT
-%token <cadena> STRING OP_ARIT_P1 OP_ARIT_P2 ASTERISCO OP_ARIT_P3 OP_RELACIONAL OP_BOOL NEGACION PARENTESIS_ABIERTO PARENTESIS_CERRADO DIV LENGTH COMA CORCHETE_ABIERTO CORCHETE_CERRADO PUNTO_Y_COMA
-%token <boolea> BOOLEAN
+%token <cadena> STRING OP_ARIT_P1 OP_ARIT_P2 ASTERISCO OP_ARIT_P3 OP_RELACIONAL OP_BOOL PARENTESIS_ABIERTO PARENTESIS_CERRADO DIV LENGTH COMA CORCHETE_ABIERTO CORCHETE_CERRADO PUNTO_Y_COMA BOOLEAN
 %token <ident> ID 
 %token <operand> ID_ARIT
 
-%type <operand> expresion_aritmetica lista_sumas lista_productos lista_potencias expresion_booleana expresion_booleana_base terminal_aritmetico terminal_booleano id_arit
+%type <operand> expresion_aritmetica lista_sumas lista_productos lista_potencias terminal_aritmetico id_arit expresion_booleana lista_or lista_and expresion_booleana_base expresion_relacional terminal_booleano
 %type <tensor_info> id lista_indices lista_indices_arit
 %type <tensor_ini_info> tensor componente lista_componentes lista_valores
 %type <cadena> op_arit_p2 concatenacion
@@ -528,79 +526,64 @@ lista_indices_arit : lista_indices_arit COMA lista_sumas	{
 								}
 							}
 
-expresion_booleana : expresion_booleana OP_BOOL expresion_booleana_base	{
-										if (strcmp($2, OP_BOOL_AND) == 0)
-										{
-											if( ! atoi($1.value) || ! atoi($3.value))
-											{
-												$$ = createValueInfo(itos(0), BOOLEAN_T, $1.lexema);
-											}
-											else
-											{
-												$$ = createValueInfo(itos(1), BOOLEAN_T, $1.lexema);
-											}
-										}
-										else
-										{
-											if( atoi($1.value) || atoi($3.value))
-											{
-												$$ = createValueInfo(itos(1), BOOLEAN_T, $1.lexema);
-											}
-											else
-											{
-												$$ = createValueInfo(itos(0), BOOLEAN_T, $1.lexema);
-											}
-											
-										}
-									}
-		| NEGACION expresion_booleana_base	{
-								int res = negateBoolean(atoi($2.value));
-								$$ = createValueInfo(itos(res), BOOLEAN_T, $2.lexema);
-							}
-		| expresion_booleana_base	{ 
-							$$ = createValueInfo($1.value, BOOLEAN_T, $1.lexema);
-						}
+expresion_booleana : lista_or	{
+					$$ = $1;
+				}
 
-expresion_booleana_base : lista_sumas OP_RELACIONAL lista_sumas {
-									if(isNumberType($1.type) && isNumberType($3.type) && isSameType($1.type, $3.type))
-									{
-										int res = doRelationalOperation(atof($1.value), $2, atof($3.value));
-										$$ = createValueInfo(itos(res), BOOLEAN_T, $1.lexema);
-									}
-									else
-									{
-										char * error = allocateSpaceForMessage();
-										sprintf(error, "Cannot do comparation %s %s %s", $1.value, $2, $3.value);
-										yyerror(error);
-									}
-								}
-			| terminal_booleano	{
-							if (isSameType($1.type, BOOLEAN_T))
+lista_or : lista_or OP_BOOL_OR lista_and	{
+							if (isSameType($1.value, TRUE_VALUE) || isSameType($1.value, TRUE_VALUE))
 							{
-								$$ = createValueInfo($1.value, $1.type, $1.lexema);
+								$$ = createValueInfo(TRUE_VALUE, BOOLEAN_T, $1.lexema);
 							}
 							else
 							{
-								char * error = allocateSpaceForMessage();
-								sprintf(error, "%s is not valid for boolean expression", $1.value);
-								yyerror(error);
+								$$ = createValueInfo(FALSE_VALUE, BOOLEAN_T, $1.lexema);
 							}
 						}
+	| lista_and	{
+				$$ = $1;
+			}
 
-terminal_booleano : BOOLEAN	{	
-					$$ = createValueInfo(itos($1), BOOLEAN_T, NULL);
+lista_and : lista_and OP_BOOL_AND expresion_booleana_base	{
+									if (isSameType($1.value, FALSE_VALUE) || isSameType($3.value, FALSE_VALUE))
+									{
+										$$ = createValueInfo(FALSE_VALUE, BOOLEAN_T, $1.lexema);
+									}
+									else
+									{
+										$$ = createValueInfo(TRUE_VALUE, BOOLEAN_T, $1.lexema);
+									}
+								}
+	| expresion_booleana_base	{
+						$$ = $1;
+					}
+
+expresion_booleana_base : NEGACION expresion_relacional	{
+                                                                $$ = createValueInfo(negateBoolean($2.value), BOOLEAN_T, $2.lexema);
+							}
+			| expresion_relacional	{
+							$$ = $1;
+						}
+
+expresion_relacional : lista_sumas OP_RELACIONAL lista_sumas	{
+									if (isSameType($1.type, $3.type))
+									{
+										$$ = createValueInfo(doRelationalOperation($1, $2, $3), BOOLEAN_T, $1.lexema);
+									}
+									else
+									{
+										yyerror(generateString("Cannot do comparation %s %s %s", 3, $1.value, $2, $3.value));
+									}
+								}
+			| terminal_booleano	{
+							$$ = $1;
+						}
+
+terminal_booleano : BOOLEAN	{
+					$$ = createValueInfo($1, BOOLEAN_T, NULL);
 				}
 		| PARENTESIS_ABIERTO expresion_booleana PARENTESIS_CERRADO	{
-											if (isSameType($2.type, BOOLEAN_T))
-											{
-												$$ = createValueInfo($2.value, BOOLEAN_T, $2.lexema);
-											}
-											else
-											{
-												char * error = allocateSpaceForMessage();
-												sprintf(error, "Cannot do operation with %s", $2.value);
-												yyerror(error);
-											}
+											$$ = $2;
 										}
 
 tensor : CORCHETE_ABIERTO lista_componentes CORCHETE_CERRADO	{

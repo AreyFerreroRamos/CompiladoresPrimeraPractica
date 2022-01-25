@@ -51,4 +51,14 @@ int intOperations(int num1, int num2, char *op, int *res);
  */
 int floatOperations(float num1, float num2, char *op, float *res);
 
+/**
+ *
+ */
+int intRelationalOperation(int num1, char *op, int num2);
+
+/**
+ *
+ */
+int floatRelationalOperation(float num1, char *op, float num2);
+
 #endif
