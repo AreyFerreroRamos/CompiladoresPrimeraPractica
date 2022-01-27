@@ -670,10 +670,10 @@ lista_valores : lista_valores COMA lista_sumas	{
 					$$.num_elem = 1;
 					if (ampliar_vector_dims == NULL)
 					{
+						ampliar_vector_dims = malloc(1);
+                                                ampliar_vector_dims[0] = true;
 						vector_dims_tensor = malloc(4);
 						vector_dims_tensor[0] = 1;
-						ampliar_vector_dims = malloc(1);
-						ampliar_vector_dims[0] = true;
 						num_dims_tensor++;
 					}
 				}
