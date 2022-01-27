@@ -56,7 +56,7 @@ char *itos(int num)
 char *ftos(float num)
 {
     char *string = (char *) malloc(sizeof(char) * STR_MAX_LENGTH);
-    sprintf(string, "%f", num);
+    sprintf(string, "%.2f", num);
     return string;
 }
 

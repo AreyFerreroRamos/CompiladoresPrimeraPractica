@@ -83,7 +83,7 @@ int end_analisi_sintactic()
 
 // FUNCIONES DE UTILIDAD
 
-int isPossibleTensorProduct(int *elemDims1, int numDims1, int *elemDims2, int numDims2)
+void isPossibleTensorProduct(int *elemDims1, int numDims1, int *elemDims2, int numDims2)
 {
     if (numDims1 <= 2 && numDims2 <= 2)
     {	// Si son matrices o vectores.
@@ -97,13 +97,14 @@ int isPossibleTensorProduct(int *elemDims1, int numDims1, int *elemDims2, int nu
             nColsMatrix1 = elemDims1[1];
         }
         nRowsMatrix2 = elemDims2[0];
-        if (nColsMatrix1 == nRowsMatrix2)
+        if (nColsMatrix1 != nRowsMatrix2)
         {
-            return 0;
+            yyerror("Los indices de los tensores no son compatibles y no se puede realizar el producto.");
         }
-        return -1;
+
+    }else{
+        yyerror("No esta permitido multiplicar tensores de dimensión superior a 2.");
     }
-    return -2;
 }
 
 int maxNum(float a, float b)
@@ -134,7 +135,7 @@ int getAcumElemDim(int *elem_dim, int num_dim)
 
 // FUNCIONES PARA REALIZAR OPERACIONES
 
-int intOperations(int num1, int num2, char *operand, int *res)
+void intOperations(int num1, int num2, char *operand, int *res)
 {
     if (strcmp(operand, OP_ARIT_SUMA) == 0)
     {
@@ -160,7 +161,7 @@ int intOperations(int num1, int num2, char *operand, int *res)
         }
         else
         {
-            return 0;
+            yyerror("No se puede hacer la división si el divisor es 0");
         }
     }
     else if (strcmp(operand, OP_ARIT_MOD) == 0)
@@ -172,7 +173,7 @@ int intOperations(int num1, int num2, char *operand, int *res)
         }
         else
         {
-            return 0;
+            yyerror("No se puede hacer el módulo si el divisor es 0");
         }
     }
     else if (strcmp(operand, OP_ARIT_POTENCIA) == 0)
@@ -180,10 +181,9 @@ int intOperations(int num1, int num2, char *operand, int *res)
         simpleDebug("Estoy en la potencia\n", 1);
         *res = (int) pow((double) num1, (double) num2);
     }
-    return 1;
 }
 
-int floatOperations(float num1, float num2, char *operand, float *res)
+void floatOperations(float num1, float num2, char *operand, float *res)
 {
     if (strcmp(operand, OP_ARIT_SUMA) == 0)
     {
@@ -205,14 +205,13 @@ int floatOperations(float num1, float num2, char *operand, float *res)
         }
         else
         {
-            return 0;
+            yyerror("No se puede hacer la división si el divisor es 0");
         }
     }
     else if (strcmp(operand, OP_ARIT_POTENCIA) == 0)
     {
         *res = (float) pow((double) num1, (double) num2);
     }
-    return 1;
 }
 
 int intRelationalOperation(int num1, char *op, int num2)

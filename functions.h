@@ -105,7 +105,7 @@ void asignacionTensor(sym_value_type *result, int posicion, value_info v1, value
  * Dados dos operadores y un operando realiza la operacion y la almacena
  * en finish_val.
  */
-int doAritmeticOperation(value_info v1, char *operand, value_info v2, value_info *finish_val);
+void doAritmeticOperation(value_info v1, char *operand, value_info v2, value_info *finish_val);
 
 /**
  * Dados dos numeros y un operando relacional
@@ -141,7 +141,7 @@ int doTensorProductInit(char *nameVar1, char *nameVar2, sym_value_type *tmp);
 /**
  * Realiza el producto de un número por un tensor.
  */
-int doNumberProductTensor(char *number, char *type, char *nameTensor, sym_value_type *tmp);
+void doNumberProductTensor(char *number, char *type, char *nameTensor, sym_value_type *tmp);
 
 /**
  * Realiza el producto de dos tensores.
@@ -153,6 +153,6 @@ int doNumberProductTensor(char *number, char *type, char *nameTensor, sym_value_
  * 	- Producto de una matriz por un vector.
  * 	- Producto de dos matrices.
  */
-int doTensorProductTensor(char *nameVar1, char *nameVar2, sym_value_type *tmp);
+void doTensorProductTensor(char *nameVar1, char *nameVar2, sym_value_type *tmp);
 
 #endif
