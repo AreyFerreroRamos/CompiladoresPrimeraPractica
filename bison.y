@@ -227,6 +227,9 @@ lista_sumas : lista_sumas OP_ARIT_P3 lista_productos	{
 						}
 					}
 
+op_arit_p1 : SUMA
+
+
 lista_productos : lista_productos op_arit_p2 lista_potencias 	{
 									if (isNumberType($3.type))
 									{
@@ -310,6 +313,7 @@ lista_potencias : lista_potencias OP_ARIT_P1 terminal_aritmetico	{
 						}
 					}
 
+
 terminal_aritmetico : INTEGER	{
 					$$ = createValueInfo(itos($1), INT32_T, NULL);
 				}
@@ -320,21 +324,21 @@ terminal_aritmetico : INTEGER	{
 				$$ = createValueInfo($1.value, $1.type, $1.lexema);
 			}
 	| PARENTESIS_ABIERTO lista_sumas PARENTESIS_CERRADO	{
-										$$ = $2;
-								}
-	| DIV lista_sumas COMA lista_sumas PARENTESIS_CERRADO	{
-									if ((isSameType($2.type,INT32_T)) && (isSameType($4.type,INT32_T)))
-									{
-										doAritmeticOperation($2, "/", $4, &$$);
-									}
-									else
-									{
-										yyerror("Algún parámetro no es un entero");
-									}
-								}
-	| LENGTH STRING PARENTESIS_CERRADO	{
-							$$ = createValueInfo(itos(lenght($2)), INT32_T, NULL);
-						}
+        										$$ = $2;
+        								}
+        | DIV lista_sumas COMA lista_sumas PARENTESIS_CERRADO	{
+        									if ((isSameType($2.type,INT32_T)) && (isSameType($4.type,INT32_T)))
+        									{
+        										doAritmeticOperation($2, "/", $4, &$$);
+        									}
+        									else
+        									{
+        										yyerror("Algún parámetro no es un entero");
+        									}
+        								}
+        	| LENGTH STRING PARENTESIS_CERRADO	{
+        							$$ = createValueInfo(itos(lenght($2)), INT32_T, NULL);
+        						}
 
 id_arit : ID_ARIT	{ 
 				$$ = $1; 
