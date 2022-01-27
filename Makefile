@@ -14,7 +14,7 @@
 # General defines
 CC = gcc
 LEX = flex
-YACC = bison 
+YACC = bison
 ELEX = flex.l
 EYACC = bison.y
 OBJ = main.o bison.o flex.o

@@ -49,14 +49,14 @@
 %token <no_definit> ASSIGN OP_BOOL_AND OP_BOOL_OR NEGACION COMA PUNTO_Y_COMA PARENTESIS_ABIERTO PARENTESIS_CERRADO CORCHETE_ABIERTO CORCHETE_CERRADO DIV LENGTH
 %token <enter> INTEGER
 %token <real> FLOAT
-%token <cadena> STRING OP_ARIT_P1 OP_ARIT_P2 ASTERISCO OP_ARIT_P3 OP_RELACIONAL BOOLEAN
+%token <cadena> STRING OP_ARIT_P1 OP_ARIT_P2 ASTERISCO SUMA RESTA OP_RELACIONAL BOOLEAN
 %token <ident> ID 
 %token <operand> ID_ARIT
 
 %type <operand> expresion_aritmetica lista_sumas lista_productos lista_potencias terminal_aritmetico id_arit expresion_booleana lista_or lista_and expresion_booleana_base expresion_relacional terminal_booleano
 %type <tensor_info> id lista_indices lista_indices_arit
 %type <tensor_ini_info> tensor componente lista_componentes lista_valores
-%type <cadena> op_arit_p2 concatenacion
+%type <cadena> op_arit_p3 op_arit_p2 concatenacion
 
 %start programa
 
@@ -68,10 +68,10 @@ programa : lista_de_sentencias
 
 lista_de_sentencias : lista_de_sentencias sentencia | sentencia
 
-sentencia : asignacion 
+sentencia : asignacion
 	| expresion_aritmetica 	{
 					fprintf(yyout, "El resultado es %s\n", $1.value);
-				} 
+				}
 	| expresion_booleana 	{
 					char * boolValue = atoi($1.value) ? "true" : "false";
 					fprintf(yyout, "La expresion booleana es %s\n", boolValue);
@@ -197,9 +197,9 @@ concatenacion : concatenacion ASTERISCO STRING 	{
 					$$ = strdup($1);
 				}
 
-expresion_aritmetica : lista_sumas
+expresion_aritmetica :lista_sumas
 
-lista_sumas : lista_sumas OP_ARIT_P3 lista_productos	{
+lista_sumas : lista_sumas op_arit_p3 lista_productos	{
 								if (isNumberType($3.type))
 								{	
 									sym_value_type tmp;
@@ -227,8 +227,12 @@ lista_sumas : lista_sumas OP_ARIT_P3 lista_productos	{
 						}
 					}
 
-op_arit_p1 : SUMA
+op_arit_p3 : SUMA	{
 
+}
+	| RESTA	{
+
+	}
 
 lista_productos : lista_productos op_arit_p2 lista_potencias 	{
 									if (isNumberType($3.type))
@@ -312,7 +316,6 @@ lista_potencias : lista_potencias OP_ARIT_P1 terminal_aritmetico	{
 							yyerror(generateString("No se puede hacer operaciones aritmeticas con el tipo %s",1,$1.type));
 						}
 					}
-
 
 terminal_aritmetico : INTEGER	{
 					$$ = createValueInfo(itos($1), INT32_T, NULL);

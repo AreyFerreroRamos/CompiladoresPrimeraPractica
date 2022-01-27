@@ -72,10 +72,16 @@ id {lletra}({lletra}|{digit}|_({lletra}|{digit}))*
 		return ASTERISCO;
 	}
 
-("+"|"-")	{
+("+")	{
                 debug("%s\n", yytext, 0);
                 yylval.cadena = strdup(yytext);
-                return OP_ARIT_P3;
+                return SUMA;
+            }
+
+("-")	{
+                debug("%s\n", yytext, 0);
+                yylval.cadena = strdup(yytext);
+                return RESTA;
             }
 
 (">"|">="|"=="|"<="|"<"|"!=")	{
