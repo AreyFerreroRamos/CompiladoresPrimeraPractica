@@ -104,6 +104,18 @@ int getDim(char *key, int index_dim)
 	}
 }
 
+char *getNewType(char *type1, char *type2)
+{
+    if (isSameType(type1, INT32_T) && isSameType(type2, INT32_T))
+    {
+        return INT32_T;
+    }
+    else
+    {
+        return FLOAT64_T;
+    }
+}
+
 void invertVector(int *vector, int dim)
 {
 	int aux;
@@ -116,62 +128,76 @@ void invertVector(int *vector, int dim)
 	}
 }
 
-void castValueToVoidPointer(void *ptr, char *value, char *type)
+void *initializeTensorElements(char *value, char *type)
 {
+    void *list;
 	if (isSameType(type, INT32_T))
 	{
-		((int *) ptr)[0] = atoi(value);
+        list = malloc(calculateSizeType(type));
+		((int *) list)[0] = atoi(value);
 	}
 	else if (isSameType(type, FLOAT64_T))
 	{
-		((float *) ptr)[0] = atof(value);
+        list = malloc(calculateSizeType(type));
+		((float *) list)[0] = atof(value);
 	}
+    return list;
 }
 
-void castTensorToVoidPointer(void *ptr, char *type1, int num_element1, void *elements2, char *type2, int num_element2)
+void *joinTensorElements(void *elems1, char *type1, int nElem1, void *elems2, char *type2, int nElem2)
 {
-	char *typefinal;
-	if (isSameType(type1, INT32_T) && isSameType(type2, INT32_T))
-	{
-		typefinal = INT32_T;
-	}
-	else
-	{
-		typefinal = FLOAT64_T;
-	}
+	char *typefinal = getNewType(type1,type2);
+    void *aux = realloc(elems1, calculateSizeType(typefinal)*(nElem1+nElem2));
 	if (isSameType(typefinal, INT32_T))
 	{	// Si la lista final se trata como entera.
-		int i = num_element1;
-		for (int j = 0; j < num_element2; j++)
+		int i = nElem1;
+		for (int j = 0; j < nElem2; j++)
 		{
-			((int *) ptr)[i++] = ((int *) elements2)[j];
+			((int *) aux)[i++] = ((int *) elems2)[j];
 		}
 	}
 	else
 	{	// Si la lista final se trata como float.
-		int i = num_element1;
+		int i = nElem1;
 		if (isSameType(type1, INT32_T))
 		{
 			for (int j = 0; j < i; j++)
 			{
-				((float *) ptr)[j] = ((int *) ptr)[j];
+				((float *) aux)[j] = ((int *) elems1)[j];
 			}
 		}
 		if (isSameType(type2, INT32_T))
 		{	// Si los valores se tratan como enteros.
-			for (int j = 0; j < num_element2; j++)
+			for (int j = 0; j < nElem2; j++)
 			{
-				((float *) ptr)[i++] = ((int *) elements2)[j];
+				((float *) aux)[i++] = ((int *) elems2)[j];
 			}
 		}
 		else if (isSameType(type2, FLOAT64_T))
 		{	// Si los valores se tratan como float.
-			for (int j = 0; j < num_element2; j++)
+			for (int j = 0; j < nElem2; j++)
 			{
-				((float *) ptr)[i++] = ((float *) elements2)[j];
+				((float *) aux)[i++] = ((float *) elems2)[j];
 			}
 		}
 	}
+    return aux;
+}
+
+void printfTensorBase(int numElem,char *type,void *elems){
+    printf("[");
+    for (int i = 0; i < numElem; i++)
+    {
+        if (isSameType(type, INT32_T))
+        {
+            printf("%i,", ((int *) elems)[i]);
+        }
+        else if (isSameType(type, FLOAT64_T))
+        {
+            printf("%f,", ((float *) elems)[i]);
+        }
+    }
+    printf("]\n");
 }
 
 void printTensor(char *nameVar, sym_value_type tensor, int inFile)

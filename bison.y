@@ -197,20 +197,10 @@ asignacion : ID ASSIGN expresion_aritmetica	{
 						}
 						fprintf(yyout, "ID: %s pren per valor: \"%s\"\n", $1.lexema, (char *) entry.value);
 					}
-	| ID ASSIGN tensor	{	
-					sym_value_type entry;
-					entry.type = $3.type;
-					entry.value = NULL;
-					entry.size = calculateSizeType($3.type) * $3.num_elem;
-					entry.num_dim = $3.dim;
+	| ID ASSIGN tensor	{
 					invertVector(vector_dims_tensor, $3.dim);
-					entry.elem_dims = vector_dims_tensor;
-					entry.elements = $3.elements;
-					int message = sym_enter($1.lexema, &entry);
-					if (message != SYMTAB_OK && message != SYMTAB_DUPLICATE)
-					{
-						yyerror("Error al guardar en symtab.");
-					}
+					sym_value_type entry = createSymValueType($3.type,NULL, calculateSizeType($3.type) * $3.num_elem, $3.dim, vector_dims_tensor, $3.elements);
+					addOrUpdateEntry($1.lexema, entry);
 					printTensor($1.lexema, entry, 1);
 					vector_dims_tensor = NULL;
 					ampliar_vector_dims = NULL;
@@ -531,7 +521,7 @@ expresion_booleana : lista_or	{
 				}
 
 lista_or : lista_or OP_BOOL_OR lista_and	{
-							if (isSameType($1.value, TRUE_VALUE) || isSameType($1.value, TRUE_VALUE))
+							if (isSameType($1.value, TRUE_VALUE) || isSameType($3.value, TRUE_VALUE))
 							{
 								$$ = createValueInfo(TRUE_VALUE, BOOLEAN_T, $1.lexema);
 							}
@@ -591,35 +581,19 @@ tensor : CORCHETE_ABIERTO lista_componentes CORCHETE_CERRADO	{
 									{
 										ampliar_vector_dims[$2.dim] = false;
 									}
-									$$.dim = $2.dim + 1;
-									$$.type = $2.type;
-									$$.elements = $2.elements;
-									$$.num_elem = $2.num_elem;		
+									$2.dim++;
+									$$ = $2;
 								}
 
-lista_componentes : lista_componentes PUNTO_Y_COMA componente	{
-									$$.dim = $1.dim;
-									if (isSameType($1.type, INT32_T) && isSameType($3.type, INT32_T))
-									{
-										$$.type = INT32_T;
-									}
-									else
-									{
-										$$.type = FLOAT64_T;
-									}
-									$$.num_elem = $1.num_elem + $3.num_elem;
-									$$.elements = realloc($1.elements, ($1.num_elem + $3.num_elem) * calculateSizeType($$.type));
-									castTensorToVoidPointer($$.elements, $1.type, $1.num_elem, $3.elements, $3.type, $3.num_elem);	
+lista_componentes : lista_componentes PUNTO_Y_COMA componente	{	void *elements = joinTensorElements($1.elements, $1.type, $1.num_elem, $3.elements, $3.type, $3.num_elem);
+                                                                 	$$ = createTensorIniInfo($1.dim, getNewType($1.type, $3.type), elements, $1.num_elem + $3.num_elem);
 									if (ampliar_vector_dims[$1.dim])
 									{
 										vector_dims_tensor[$1.dim] += 1;
 									}
 								}
 		| componente	{
-					$$.dim = $1.dim;
-					$$.type = $1.type;
-					$$.elements = $1.elements;
-					$$.num_elem = $1.num_elem;
+					$$ = $1;
 					if ($1.dim >= num_dims_tensor)
 					{
 						vector_dims_tensor = realloc(vector_dims_tensor, ++num_dims_tensor * 4);					
@@ -630,44 +604,22 @@ lista_componentes : lista_componentes PUNTO_Y_COMA componente	{
 				}
 
 componente : lista_valores	{
-					$$.dim = $1.dim;
-					$$.type = $1.type;
-					$$.elements = $1.elements;
-					$$.num_elem = $1.num_elem;
+					$$ = $1;
 				}
 	| tensor	{
-				$$.dim = $1.dim;
-				$$.type = $1.type;
-				$$.elements = $1.elements;
-				$$.num_elem = $1.num_elem;
+				$$ = $1;
 			}
 
 lista_valores : lista_valores COMA lista_sumas	{
-							$$.dim = 0;
-							if (isSameType($1.type, INT32_T) && isSameType($3.type, INT32_T))
-							{
-								$$.type = INT32_T;
-							}
-							else
-							{
-								$$.type = FLOAT64_T;
-							}
-							$$.elements = realloc($1.elements, ($1.num_elem + 1) * calculateSizeType($$.type));
-							void * elem2 = malloc(calculateSizeType($3.type));
-							castValueToVoidPointer(elem2, $3.value, $3.type);
-							castTensorToVoidPointer($$.elements, $1.type, $1.num_elem, elem2, $3.type, 1);
-							$$.num_elem = $1.num_elem + 1;
+							void *elements = joinTensorElements($1.elements, $1.type, $1.num_elem, initializeTensorElements($3.value, $3.type), $3.type, 1);
+							$$ = createTensorIniInfo(0, getNewType($1.type, $3.type), elements, $1.num_elem + 1);
 							if (ampliar_vector_dims[0])
 							{
 								vector_dims_tensor[0] += 1;
 							}
 						}
 		| lista_sumas	{
-					$$.dim = 0;
-					$$.type = $1.type;
-					$$.elements = malloc(calculateSizeType($1.type));
-					castValueToVoidPointer($$.elements, $1.value, $1.type);
-					$$.num_elem = 1;
+					$$ = createTensorIniInfo(0, $1.type,initializeTensorElements($1.value,$1.type), 1);
 					if (ampliar_vector_dims == NULL)
 					{
 						ampliar_vector_dims = malloc(1);

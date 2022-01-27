@@ -82,6 +82,42 @@ int calculateSizeType(char *type)
     }
 }
 
+tensor_ini_info createTensorIniInfo(int dim, char *type, value_info *elements, int numElem)
+{
+    tensor_ini_info aux;
+    aux.dim = dim;
+    aux.type = strdup(type);
+    aux.elements = elements;
+    aux.num_elem = numElem;
+    return aux;
+}
+
+sym_value_type createSymValueType(char *type,char *value, int size, int numDim, int *elemDims, void *elements)
+{
+    sym_value_type aux;
+    if (type != NULL)
+    {
+        aux.type = strdup(type);
+    }
+    else
+    {
+        aux.type = NULL;
+    }
+    if (value != NULL)
+    {
+        aux.value = strdup(value);
+    }
+    else
+    {
+        aux.value = NULL;
+    }
+    aux.size = size;
+    aux.num_dim = numDim;
+    aux.elem_dims = elemDims;
+    aux.elements = elements;
+    return aux;
+}
+
 char *generateString(char *message, int nArgs, ...)
 {
     va_list ap;
@@ -139,4 +175,22 @@ int isNumberType(char *type)
     return (strcmp(type, INT32_T) == 0 || strcmp(type, FLOAT64_T) == 0);
 }
 
+sym_value_type getEntry(char* key)
+{
+    sym_value_type entry;
+    int response = sym_lookup(key, &entry);
+    if (response == SYMTAB_NOT_FOUND)
+    {
+        yyerror(generateString("No se ha encontrado el elemento '%s' en la symtab.",1, key));
+    }
+    return entry;
+}
 
+void addOrUpdateEntry(char* key, sym_value_type entry)
+{
+    int response = sym_enter(key, &entry);
+    if (response == SYMTAB_STACK_OVERFLOW)
+    {
+        yyerror("No hay más memoria (añadiendo entrada).");
+    }
+}

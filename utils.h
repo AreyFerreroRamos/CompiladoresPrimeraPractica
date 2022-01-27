@@ -44,6 +44,18 @@ char *allocateSpaceForMessage();
 int calculateSizeType(char *type);
 
 /**
+ * Dado los campos necesarios para gestionar un tensor durante su definición como variable del programa,
+ * se genera una estructura que contiene dichos campos y se devuelve.
+ */
+tensor_ini_info createTensorIniInfo(int dim, char *type, value_info *elements, int num_elem);
+
+/**
+ * Dados los campos necesarios para crear una entrada en la tabla de símbolos,
+ * se genera una estructura (sym_value_type) que contiene dichos campos y se devuele.
+ */
+sym_value_type createSymValueType(char *type,char *value, int size, int numDim, int *elemDims, void *elements);
+
+/**
  * Dado un texto con "%s donde quiera poner un argumento, el numero de argumentos, y los argumentos
  * devuelve un string con los argumentos dentro del mensaje.
  */
@@ -62,5 +74,17 @@ int isSameType(char *type1, char *type2);
  * o 0 si no lo es.
  */
 int isNumberType(char *type);
+
+/**
+ * La función busca en la symtab la variable y la devuelve. Si se produce algún error
+ * se lanzará un yyerror().
+ */
+sym_value_type getEntry(char* key);
+
+/**
+ * La función añade o actualiza (si ya existía) una entrada en la symtab. Si se produce algún error
+ * se lanzará un yyerror().
+ */
+void addOrUpdateEntry(char* key, sym_value_type entry);
 
 #endif

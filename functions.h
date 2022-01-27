@@ -45,6 +45,11 @@ char *getIdName(char *idWithAssign);
 int getDim(char *key, int num_dims);
 
 /**
+ * Dados dos tipos númericos, se devuelve el tipo que resulta de operar ambos números.
+ */
+char *getNewType(char *type1, char *type2);
+
+/**
  * Dado un vector, se invierte el orden de los elementos que lo componen.
  */
 void invertVector(int *vector, int dim);
@@ -53,13 +58,15 @@ void invertVector(int *vector, int dim);
  * Dado un valor en formato caracter y el tipo de este valor lo convierte a
  * un void* interpretado como el tipo.
  */
-void castValueToVoidPointer(void *ptr, char *value, char *type);
+void *initializeTensorElements(char *value, char *type);
 
 /**
  * Dadas dos listas  y el tipo de cada una las une en una sola lista que tendrá el tipo
  * prioritario (1.Float 2.Int).
  */
-void castTensorToVoidPointer(void *ptr, char *type1, int num_element1, void *elements2, char *type2, int num_element2);
+void *joinTensorElements(void *elems1, char *type1, int nElem1, void *elems2, char *type2, int nElem2);
+
+void printfTensorBase(int numElem,char *type,void *elems);
 
 /**
  * Dado un tensor, el nombre de la variable i si se quiere imprimir en el archivo de salida o en consola
