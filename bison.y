@@ -161,7 +161,7 @@ id : lista_indices CORCHETE_CERRADO	{
 						$$ = createTensorInfo($1.index_dim, $1.calcIndex, $1.lexema);
 					}
    
-lista_indices : lista_indices COMA lista_sumas	{
+lista_indices : lista_indices COMA expresion_aritmetica	{
 							if (isSameType($3.type, INT32_T)) 
 							{
 								int dim = getDim($1.lexema, $1.index_dim);
@@ -179,7 +179,7 @@ lista_indices : lista_indices COMA lista_sumas	{
 								yyerror(generateString("El indice %s no es de tipo INT32_T",1, $3.value));
 							}
 						}
-		| ID CORCHETE_ABIERTO lista_sumas	{
+		| ID CORCHETE_ABIERTO expresion_aritmetica	{
 		      						if (isSameType($3.type, INT32_T))
 								{
 									$$ = createTensorInfo(1, atoi($3.value), $1.lexema);
@@ -361,7 +361,7 @@ id_arit : ID_ARIT	{
 							$$.lexema = NULL;
 						}
 
-lista_indices_arit : lista_indices_arit COMA lista_sumas	{
+lista_indices_arit : lista_indices_arit COMA expresion_aritmetica	{
 									if (isSameType($3.type, INT32_T)) 
 									{
 										int dim = getDim($1.lexema, $1.index_dim);
@@ -381,7 +381,7 @@ lista_indices_arit : lista_indices_arit COMA lista_sumas	{
 										yyerror(error);
 									}					
 								}
-		| ID_ARIT CORCHETE_ABIERTO lista_sumas	{
+		| ID_ARIT CORCHETE_ABIERTO expresion_aritmetica	{
 	   							if (isSameType($3.type, INT32_T)) 
 								{
 									$$ = createTensorInfo(1, atoi($3.value), $1.lexema);
@@ -433,7 +433,7 @@ expresion_booleana_base : NEGACION expresion_relacional	{
 							$$ = $1;
 						}
 
-expresion_relacional : lista_sumas OP_RELACIONAL lista_sumas	{
+expresion_relacional : expresion_aritmetica OP_RELACIONAL expresion_aritmetica	{
 									if (isSameType($1.type, $3.type))
 									{
 										$$ = createValueInfo(doRelationalOperation($1, $2, $3), BOOLEAN_T, $1.lexema);
@@ -488,7 +488,7 @@ componente : lista_valores	{
 				$$ = $1;
 			}
 
-lista_valores : lista_valores COMA lista_sumas	{
+lista_valores : lista_valores COMA expresion_aritmetica	{
 							void *elements = joinTensorElements($1.elements, $1.type, $1.num_elem, initializeTensorElements($3.value, $3.type), $3.type, 1);
 							$$ = createTensorIniInfo(0, getNewType($1.type, $3.type), elements, $1.num_elem + 1);
 							if (ampliar_vector_dims[0])
@@ -496,7 +496,7 @@ lista_valores : lista_valores COMA lista_sumas	{
 								vector_dims_tensor[0] += 1;
 							}
 						}
-		| lista_sumas	{
+		| expresion_aritmetica	{
 					$$ = createTensorIniInfo(0, $1.type,initializeTensorElements($1.value,$1.type), 1);
 					if (ampliar_vector_dims == NULL)
 					{
