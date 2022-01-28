@@ -82,6 +82,46 @@ int calculateSizeType(char *type)
     }
 }
 
+
+value_info createValueInfo(char *value, char *type, char *lexema)
+{
+    value_info aux;
+    if (value != NULL)
+    {
+        aux.value = strdup(value);
+    }
+    else
+    {
+        aux.value = NULL;
+    }
+    aux.type = strdup(type);
+    if (lexema != NULL)
+    {
+        aux.lexema = strdup(lexema);
+    }
+    else
+    {
+        aux.lexema = NULL;
+    }
+    return aux;
+}
+
+tensor_info createTensorInfo(int index_dim, int calcIndex, char *lexema)
+{
+    tensor_info aux;
+    aux.index_dim = index_dim;
+    aux.calcIndex = calcIndex;
+    if (lexema != NULL)
+    {
+        aux.lexema = strdup(lexema);
+    }
+    else
+    {
+        aux.lexema = NULL;
+    }
+    return aux;
+}
+
 tensor_ini_info createTensorIniInfo(int dim, char *type, value_info *elements, int numElem)
 {
     tensor_ini_info aux;

@@ -30,6 +30,13 @@
 #define OP_REL_EQUAL "=="
 #define OP_REL_DIFF "!="
 
+#define FUNC_DIV "div"
+#define FUNC_LENGTH "length"
+#define FUNC_SIZE "size"
+#define FUNC_ZEROS "zeros"
+#define FUNC_ONES "ones"
+#define FUNC_TRANSPOSE "transpose"
+
 #define TMP_BASE_ID "_tmp_"
 #define TMP_ID_MAX_LENGTH 10
 
@@ -55,4 +62,10 @@ typedef struct
 	int num_elem;   // Número de elementos del tensor.
 } tensor_ini_info;
 
+
+typedef struct
+{
+    value_info *elements;
+    int numElem;
+} elements_list;
 #endif

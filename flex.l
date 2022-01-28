@@ -19,6 +19,7 @@
   extern void yyerror(char *);
   bool assignFounded = false;
   bool corcheteOpenFounded = false;
+  extern int inFunction;
 %}
 
 %option yylineno
@@ -72,17 +73,17 @@ id {lletra}({lletra}|{digit}|_({lletra}|{digit}))*
 		return ASTERISCO;
 	}
 
-("+")	{
-                debug("%s\n", yytext, 0);
-                yylval.cadena = strdup(yytext);
-                return SUMA;
-            }
+("+")   {
+            debug("%s\n", yytext, 0);
+            yylval.cadena = strdup(yytext);
+            return SUMA;
+        }
 
-("-")	{
-                debug("%s\n", yytext, 0);
-                yylval.cadena = strdup(yytext);
-                return RESTA;
-            }
+("-")   {
+            debug("%s\n", yytext, 0);
+            yylval.cadena = strdup(yytext);
+            return RESTA;
+        }
 
 (">"|">="|"=="|"<="|"<"|"!=")	{
                                     debug("%s\n", yytext, 0);
@@ -120,14 +121,40 @@ id {lletra}({lletra}|{digit}|_({lletra}|{digit}))*
 		return COMA;
 	}
 
-"div("	{
+"div"	{
             debug("%s\n", yytext, 0);
+            inFunction++;
             return DIV;
         }
 
-"length("	{
+"length"	{
                 debug("%s\n", yytext, 0);
+                inFunction++;
                 return LENGTH;
+            }
+
+"size"  {
+            debug("%s\n", yytext, 0);
+            inFunction++;
+            return SIZE;
+        }
+
+"zeros" {
+            debug("%s\n", yytext, 0);
+            inFunction++;
+            return ZEROS;
+        }
+
+"ones"  {
+            debug("%s\n", yytext, 0);
+            inFunction++;
+            return ONES;
+        }
+
+"transpose" {
+                debug("%s\n", yytext, 0);
+                inFunction++;
+                return TRANSPOSE;
             }
 
 "="	{
@@ -153,7 +180,7 @@ id {lletra}({lletra}|{digit}|_({lletra}|{digit}))*
 	}
 
 {id}	{
-            if (assignFounded == false && corcheteOpenFounded == false)
+            if (assignFounded == false && corcheteOpenFounded == false && inFunction == 0)
             {
                 debug("ID POINTER: %s\n", yytext, 0);
                 yylval.ident.lexema = strdup(yytext);

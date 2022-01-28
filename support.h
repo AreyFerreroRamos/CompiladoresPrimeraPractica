@@ -58,4 +58,34 @@ int intRelationalOperation(int num1, char *op, int num2);
  */
 int floatRelationalOperation(float num1, char *op, float num2);
 
+/**
+ *
+ */
+void controlParamsDiv(elements_list params);
+
+/**
+ *
+ */
+void controlParamsLength(elements_list params);
+
+/**
+ *
+ */
+void controlParamsSize(elements_list params);
+
+/**
+ *
+ */
+void controlParamsZerosOnes(char *nameFunc, elements_list params);
+
+/**
+ *
+ */
+void controlParamsTranspose(elements_list params);
+
+/**
+ *
+ */
+value_info calculateFunctionLength(value_info element);
+
 #endif

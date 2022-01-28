@@ -44,6 +44,18 @@ char *allocateSpaceForMessage();
 int calculateSizeType(char *type);
 
 /**
+ * Dados los datos necesarios para crear una entrada en la symtab,
+ * genera un objeto que contiene todos ellos y lo devuele.
+ */
+value_info createValueInfo(char *value, char *type, char *lexema);
+
+/**
+ * Dados los parámetros necesarios para crear una estructura de tipo tensor_info (dim,
+ * calcIndex y lexema) se crea dicha estructura.
+ */
+tensor_info createTensorInfo(int dim, int calcIndex, char *lexema);
+
+/**
  * Dado los campos necesarios para gestionar un tensor durante su definición como variable del programa,
  * se genera una estructura que contiene dichos campos y se devuelve.
  */

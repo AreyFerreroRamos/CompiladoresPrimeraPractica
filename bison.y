@@ -22,6 +22,7 @@
   	// Variables para controlar el flujo de variables temporales en la symtab.
   char **list_tmp_variables_symtab;
   int num_tmp_variable = 0;
+  extern int inFunction;
 %}
 
 %code requires {
@@ -40,23 +41,25 @@
 	float real;
 	char *cadena;
 	value_info operand;
+	elements_list elements_list;
 	tensor_info tensor_info;
 	tensor_ini_info tensor_ini_info;
 	sym_value_type sym_value_type;
 	void *no_definit;
 }
 
-%token <no_definit> ASSIGN OP_BOOL_AND OP_BOOL_OR NEGACION COMA PUNTO_Y_COMA PARENTESIS_ABIERTO PARENTESIS_CERRADO CORCHETE_ABIERTO CORCHETE_CERRADO DIV LENGTH
+%token <no_definit> ASSIGN OP_BOOL_AND OP_BOOL_OR NEGACION COMA PUNTO_Y_COMA PARENTESIS_ABIERTO PARENTESIS_CERRADO CORCHETE_ABIERTO CORCHETE_CERRADO DIV LENGTH SIZE ZEROS ONES TRANSPOSE
 %token <enter> INTEGER
 %token <real> FLOAT
 %token <cadena> STRING OP_ARIT_P1 OP_ARIT_P2 ASTERISCO SUMA RESTA OP_RELACIONAL BOOLEAN
 %token <ident> ID 
 %token <operand> ID_ARIT
 
-%type <operand> expresion_aritmetica lista_sumas lista_productos lista_potencias terminal_aritmetico id_arit expresion_booleana lista_or lista_and expresion_booleana_base expresion_relacional terminal_booleano
+%type <operand> expresion_aritmetica lista_sumas lista_productos lista_potencias terminal_aritmetico id_arit expresion_booleana lista_or lista_and expresion_booleana_base expresion_relacional terminal_booleano funcion param
 %type <tensor_info> id lista_indices lista_indices_arit
 %type <tensor_ini_info> tensor componente lista_componentes lista_valores
-%type <cadena> op_arit_p3 op_arit_p2 concatenacion
+%type <cadena> op_arit_p3 op_arit_p2 concatenacion id_func
+%type <elements_list> lista_params
 
 %start programa
 
@@ -228,11 +231,11 @@ lista_sumas : lista_sumas op_arit_p3 lista_productos	{
 					}
 
 op_arit_p3 : SUMA	{
-
-}
+				$$ = strdup($1);
+			}
 	| RESTA	{
-
-	}
+			$$ = strdup($1);
+		}
 
 lista_productos : lista_productos op_arit_p2 lista_potencias 	{
 									if (isNumberType($3.type))
@@ -326,22 +329,71 @@ terminal_aritmetico : INTEGER	{
 	| id_arit 	{
 				$$ = createValueInfo($1.value, $1.type, $1.lexema);
 			}
-	| PARENTESIS_ABIERTO lista_sumas PARENTESIS_CERRADO	{
+	| PARENTESIS_ABIERTO expresion_aritmetica PARENTESIS_CERRADO	{
         										$$ = $2;
         								}
-        | DIV lista_sumas COMA lista_sumas PARENTESIS_CERRADO	{
-        									if ((isSameType($2.type,INT32_T)) && (isSameType($4.type,INT32_T)))
+        /*| DIV PARENTESIS_ABIERTO expresion_aritmetica COMA expresion_aritmetica PARENTESIS_CERRADO	{
+        									if ((isSameType($3.type,INT32_T)) && (isSameType($5.type,INT32_T)))
         									{
-        										doAritmeticOperation($2, "/", $4, &$$);
+        										doAritmeticOperation($3, "/", $5, &$$);
         									}
         									else
         									{
         										yyerror("Algún parámetro no es un entero");
         									}
         								}
-        	| LENGTH STRING PARENTESIS_CERRADO	{
-        							$$ = createValueInfo(itos(lenght($2)), INT32_T, NULL);
-        						}
+        | LENGTH PARENTESIS_ABIERTO STRING PARENTESIS_CERRADO	{
+							$$ = createValueInfo(itos(lenght($3)), INT32_T, NULL);
+						}*/
+
+	| funcion	{
+				$$ = $1;
+			}
+
+funcion : id_func PARENTESIS_ABIERTO lista_params PARENTESIS_CERRADO	{
+										$$ = classifyFunction($1, $3);
+										inFunction--;
+									}
+
+id_func : DIV	{
+			$$ = strdup(FUNC_DIV);
+		}
+	| LENGTH	{
+				$$ = strdup(FUNC_LENGTH);
+			}
+	| SIZE	{
+			$$ = strdup(FUNC_SIZE);
+		}
+	| ZEROS	{
+			$$ = strdup(FUNC_ZEROS);
+		}
+	| ONES	{
+			$$ = strdup(FUNC_ONES);
+		}
+	| TRANSPOSE	{
+				$$ = strdup(FUNC_TRANSPOSE);
+			}
+
+lista_params : lista_params COMA param	{
+						$$ = $1;
+						$$.elements = addValueInfoBase($1.elements, $1.numElem, $3);
+						$$.numElem++;
+					}
+		| param	{
+				$$.numElem = 0;
+				$$.elements = addValueInfoBase($$.elements, $$.numElem, $1);
+				$$.numElem++;
+			}
+
+param : concatenacion	{
+				$$ = createValueInfo($1, STRING_T, NULL);
+			}
+	| expresion_aritmetica	{
+					$$ = $1;
+				}
+	| expresion_booleana	{
+					$$ = $1;
+				}
 
 id_arit : ID_ARIT	{ 
 				$$ = $1; 

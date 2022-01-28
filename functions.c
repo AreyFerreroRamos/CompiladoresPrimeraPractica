@@ -9,6 +9,7 @@ extern FILE *yyout;
 
 extern char **list_tmp_variables_symtab;
 extern int num_tmp_variable;
+int inFunction = 0;
 
 // FUNCIONES DE UTILIDAD
 
@@ -26,45 +27,6 @@ char *negateBoolean(char *boolean)
 		return FALSE_VALUE;
 	}
 	return TRUE_VALUE;
-}
-
-value_info createValueInfo(char *value, char *type, char *lexema)
-{
-	value_info aux;
-	if (value != NULL)
-	{
-		aux.value = strdup(value);
-	}
-	else
-	{
-		aux.value = NULL;
-	}
-	aux.type = strdup(type);
-	if (lexema != NULL)
-	{
-		aux.lexema = strdup(lexema);
-	}
-	else
-	{
-		aux.lexema = NULL;
-	}
-	return aux;
-}
-
-tensor_info createTensorInfo(int index_dim, int calcIndex, char *lexema)
-{
-	tensor_info aux;
-	aux.index_dim = index_dim;
-	aux.calcIndex = calcIndex;
-	if (lexema != NULL)
-	{
-		aux.lexema = strdup(lexema);
-	}
-	else
-	{
-		aux.lexema = NULL;
-	}
-	return aux;
 }
 
 char *getIdName(char *idWithAssign)
@@ -310,6 +272,22 @@ void clearTmpTensorId()
 	list_tmp_variables_symtab = NULL;
 	num_tmp_variable = 0;
 }
+
+value_info *addValueInfoBase(value_info *list, int numElem, value_info toAdd)
+{
+    value_info *aux;
+    if (numElem == 0)
+    {
+        aux = malloc(sizeof(value_info));
+    }
+    else
+    {
+        aux = realloc(list, sizeof(value_info) * (numElem + 1));
+    }
+    aux[numElem] = toAdd;
+    return aux;
+}
+
 
 void asignacionTensor(sym_value_type *result, int posicion, value_info v1, value_info v2, char *op)
 {
@@ -671,5 +649,41 @@ void doTensorProductTensor(char *nameVar1, char *nameVar2, sym_value_type *tmp)
                 ((float *) tmp->elements)[rFinal * colsM2 + cFinal] = ((float *) aux.elements)[0];
             }
         }
+    }
+}
+
+value_info classifyFunction(char *nameFunc, elements_list params)
+{
+    if (isSameType(nameFunc, FUNC_DIV))
+    {
+        controlParamsDiv(params);
+        value_info v1;
+        doAritmeticOperation(params.elements[0], OP_ARIT_DIV, params.elements[1], &v1);
+        return v1;
+    }
+    else if (isSameType(nameFunc, FUNC_LENGTH))
+    {
+        controlParamsLength(params);
+        return calculateFunctionLength(params.elements[0]);
+    }
+    else if (isSameType(nameFunc, FUNC_SIZE))
+    {
+        controlParamsSize(params);
+        //calculateFunctionSize();
+    }
+    else if (isSameType(nameFunc, FUNC_ZEROS))
+    {
+        controlParamsZerosOnes(nameFunc, params);
+        //calculateFunctionZeros();
+    }
+    else if (isSameType(nameFunc, FUNC_ONES))
+    {
+        controlParamsZerosOnes(nameFunc, params);
+        //calculateFunctionOnes();
+    }
+    else if (isSameType(nameFunc, FUNC_TRANSPOSE))
+    {
+        controlParamsTranspose(params);
+        //calculateFunctionTranspose();
     }
 }

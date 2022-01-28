@@ -20,18 +20,6 @@ char *removeQuotationMarks(char *string1);
 char *negateBoolean(char *boolean);
 
 /**
- * Dados los datos necesarios para crear una entrada en la symtab,
- * genera un objeto que contiene todos ellos y lo devuele.
- */
-value_info createValueInfo(char *value, char *type, char *lexema);
-
-/**
- * Dados los parámetros necesarios para crear una estructura de tipo tensor_info (dim,
- * calcIndex y lexema) se crea dicha estructura.
- */
-tensor_info createTensorInfo(int dim, int calcIndex, char *lexema);
-
-/**
  * Dado un string que contiene el id, posibles espacios y el símbolo "="
  * devuelve otro string con solo la parte del id.
  */
@@ -95,6 +83,12 @@ char *generateTmpTensorId();
 void clearTmpTensorId();
 
 /**
+ * Dada una lista de parametros, el numero de parametros que hay y un nuevo parametro a
+ * añadir reserva el espacio necesario e introduce el nuevo elemento.
+ */
+value_info *addValueInfoBase(value_info *list, int numElem, value_info toAdd);
+
+/**
  *
  */
 void asignacionTensor(sym_value_type *result, int posicion, value_info v1, value_info v2, char *op);
@@ -154,5 +148,10 @@ void doNumberProductTensor(char *number, char *type, char *nameTensor, sym_value
  * 	- Producto de dos matrices.
  */
 void doTensorProductTensor(char *nameVar1, char *nameVar2, sym_value_type *tmp);
+
+/**
+ *
+ */
+value_info classifyFunction(char *nameFunc, elements_list params);
 
 #endif

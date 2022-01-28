@@ -269,3 +269,123 @@ int floatRelationalOperation(float num1, char *op, float num2)
         return num1 != num2;
     }
 }
+
+void controlParamsDiv(elements_list params)
+{
+    if (params.numElem == 2)
+    {
+        if (isSameType(params.elements[0].type, INT32_T) && isSameType(params.elements[1].type, INT32_T))
+        {
+            if (params.elements[0].value == NULL && params.elements[1].value == NULL)
+            {
+                yyerror("No se admiten tensores como parámetros de la función div()");
+            }
+        }
+        else
+        {
+            yyerror("La función div() sólo puede dividir números enteros");
+        }
+    }
+    else
+    {
+        yyerror("El número de parámetros de la función div() es 2");
+    }
+}
+
+void controlParamsLength(elements_list params)
+{
+    if (params.numElem == 1)
+    {
+        if ( !isSameType(params.elements[0].type, STRING_T) && params.elements[0].value != NULL)
+        {
+            yyerror("La función length sólo puede calcular la longitud de una cadena o el número de elementos de un tensor.");
+        }
+    }
+    else
+    {
+        yyerror("El número de parámetros de la función length() es 1");
+    }
+}
+
+void controlParamsSize(elements_list params)
+{
+    if (params.numElem == 1)
+    {
+        if (params.elements[0].value != NULL)
+        {
+            yyerror("La función size sólo puede retornar las dimensiones de un tensor.");
+        }
+    }
+    else
+    {
+        yyerror("El número de parámetros de la función size() es 1");
+    }
+}
+
+
+void controlParamsZerosOnes(char *nameFunc, elements_list params)
+{
+    if (params.numElem < 2)
+    {
+        if (params.elements[0].value == NULL)
+        {
+            for (int i = 1; i < params.numElem; i++)
+            {
+                if (isSameType(params.elements[i].type, INT32_T) && params.elements[i].value != NULL)
+                {
+                    if (atoi(params.elements[i].value) <= 0) {
+                        yyerror("La dimensión ha de ser mayor que 0.");
+                    }
+                }
+                else
+                {
+                    yyerror("Los dimensiones del tensor tienen que ser números enteros.");
+                }
+            }
+        }
+        else
+        {
+            yyerror(generateString("El primer parámetro de la función %s() tiene que ser un tensor", 1, nameFunc));
+        }
+    }
+    else
+    {
+        yyerror(generateString("El número de parámetros de la función %s() ha de ser igual o superior a 2", 1, nameFunc));
+    }
+}
+
+void controlParamsTranspose(elements_list params)
+{
+    if (params.numElem == 1)
+    {
+        if (params.elements[0].value == NULL)
+        {
+            sym_value_type entry = getEntry(params.elements[0].lexema);
+            if (entry.num_dim > 2)
+            {
+                yyerror("Sólo se pueden transponer matrices");
+            }
+        }
+        else
+        {
+            yyerror("Sólo se pueden transponer matrices");
+        }
+    }
+    else
+    {
+        yyerror("El número de parámetros de la función transpose() es 1");
+    }
+}
+
+value_info calculateFunctionLength(value_info element)
+{
+    if (isSameType(element.type, STRING_T))
+    {
+        return createValueInfo(itos(strlen(element.value)),INT32_T,NULL);
+    }
+    else
+    {
+        sym_value_type entry = getEntry(element.lexema);
+        return createValueInfo(itos(entry.size / calculateSizeType(entry.type)),INT32_T,NULL);
+    }
+}
