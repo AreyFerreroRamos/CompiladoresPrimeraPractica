@@ -429,7 +429,7 @@ value_info calculateFunctionTranspose(value_info matriz)
 {
     sym_value_type entry = getEntry(matriz.lexema);
     sym_value_type newEntry = createSymValueType(entry.type, NULL, entry.size, entry.num_dim, entry.elem_dims, entry.elements);
-    newEntry.elem_dims = malloc(2*sizeof(int));
+    newEntry.elem_dims = malloc(2 * sizeof(int));
     newEntry.elem_dims[0] = entry.elem_dims[1];
     newEntry.elem_dims[1] = entry.elem_dims[0];
     newEntry.elements = malloc(entry.size);
@@ -439,7 +439,6 @@ value_info calculateFunctionTranspose(value_info matriz)
         {
             if (isSameType(entry.type, INT32_T))
             {
-                printf("i: %i, j: %i calc: %i calc: %i\n", i, j, i * entry.elem_dims[1] + j, j * newEntry.elem_dims[1] + i);
                 ((int *) newEntry.elements)[j * newEntry.elem_dims[1] + i] = ((int *) entry.elements)[i * entry.elem_dims[1] + j];
             }
             else if (isSameType(entry.type, FLOAT64_T))
