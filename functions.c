@@ -240,24 +240,6 @@ void saveTmpTensorInSymTab(value_info *val, char *type1, char *type2, sym_value_
 	}
 }
 
-char *generateTmpTensorId()
-{
-    char *id;
-    if (list_tmp_variables_symtab == NULL)
-    {
-        list_tmp_variables_symtab = malloc(sizeof(char *));
-    }
-    else
-    {
-        list_tmp_variables_symtab = realloc(list_tmp_variables_symtab, (num_tmp_variable + 1) * sizeof(char *));
-    }
-    id = (char *) malloc(sizeof(char) * TMP_ID_MAX_LENGTH);
-    sprintf(id, "%s%i", TMP_BASE_ID, num_tmp_variable);
-    list_tmp_variables_symtab[num_tmp_variable] = id;
-    num_tmp_variable++;
-    return id;
-}
-
 void clearTmpTensorId()
 {
 	for (int i = 0; i < num_tmp_variable; i++)
@@ -669,7 +651,7 @@ value_info classifyFunction(char *nameFunc, elements_list params)
     else if (isSameType(nameFunc, FUNC_SIZE))
     {
         controlParamsSize(params);
-        //calculateFunctionSize();
+        return calculateFunctionSize(params.elements[0]);
     }
     else if (isSameType(nameFunc, FUNC_ZEROS))
     {
@@ -684,6 +666,6 @@ value_info classifyFunction(char *nameFunc, elements_list params)
     else if (isSameType(nameFunc, FUNC_TRANSPOSE))
     {
         controlParamsTranspose(params);
-        //calculateFunctionTranspose();
+        return calculateFunctionTranspose(params.elements[0]);
     }
 }

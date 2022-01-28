@@ -9,6 +9,9 @@ extern int yyparse();
 extern FILE *yyin;
 extern FILE *yyout;
 
+char **list_tmp_variables_symtab;
+int num_tmp_variable;
+
 // FUNCIONES BASE PARA EJECUCIÓN DEL COMPILADOR
 
 int init_analisi_lexic(char *file_name)
@@ -131,6 +134,24 @@ int getAcumElemDim(int *elem_dim, int num_dim)
         acum *= elem_dim[i];
     }
     return acum;
+}
+
+char *generateTmpTensorId()
+{
+    char *id;
+    if (list_tmp_variables_symtab == NULL)
+    {
+        list_tmp_variables_symtab = malloc(sizeof(char *));
+    }
+    else
+    {
+        list_tmp_variables_symtab = realloc(list_tmp_variables_symtab, (num_tmp_variable + 1) * sizeof(char *));
+    }
+    id = (char *) malloc(sizeof(char) * TMP_ID_MAX_LENGTH);
+    sprintf(id, "%s%i", TMP_BASE_ID, num_tmp_variable);
+    list_tmp_variables_symtab[num_tmp_variable] = id;
+    num_tmp_variable++;
+    return id;
 }
 
 // FUNCIONES PARA REALIZAR OPERACIONES
@@ -361,7 +382,7 @@ void controlParamsTranspose(elements_list params)
         if (params.elements[0].value == NULL)
         {
             sym_value_type entry = getEntry(params.elements[0].lexema);
-            if (entry.num_dim > 2)
+            if (entry.num_dim != 2)
             {
                 yyerror("Sólo se pueden transponer matrices");
             }
@@ -388,4 +409,46 @@ value_info calculateFunctionLength(value_info element)
         sym_value_type entry = getEntry(element.lexema);
         return createValueInfo(itos(entry.size / calculateSizeType(entry.type)),INT32_T,NULL);
     }
+}
+
+value_info calculateFunctionSize(value_info element)
+{
+    sym_value_type entry = getEntry(element.lexema);
+    int *elems = malloc(entry.num_dim*4);
+    for(int i=0; i<entry.num_dim;i++)
+    {
+        elems[i] = entry.elem_dims[i];
+    }
+    sym_value_type newEntry = createSymValueType(INT32_T,NULL, entry.num_dim * 4, 1, &entry.num_dim,elems);
+    char *tmp = generateTmpTensorId();
+    addOrUpdateEntry(tmp,newEntry);
+    return createValueInfo(NULL,INT32_T,tmp);
+}
+
+value_info calculateFunctionTranspose(value_info matriz)
+{
+    sym_value_type entry = getEntry(matriz.lexema);
+    sym_value_type newEntry = createSymValueType(entry.type, NULL, entry.size, entry.num_dim, entry.elem_dims, entry.elements);
+    newEntry.elem_dims = malloc(2*sizeof(int));
+    newEntry.elem_dims[0] = entry.elem_dims[1];
+    newEntry.elem_dims[1] = entry.elem_dims[0];
+    newEntry.elements = malloc(entry.size);
+    for (int i = 0; i < entry.elem_dims[0]; i++)
+    {
+        for (int j = 0; j < entry.elem_dims[1]; j++)
+        {
+            if (isSameType(entry.type, INT32_T))
+            {
+                printf("i: %i, j: %i calc: %i calc: %i\n", i, j, i * entry.elem_dims[1] + j, j * newEntry.elem_dims[1] + i);
+                ((int *) newEntry.elements)[j * newEntry.elem_dims[1] + i] = ((int *) entry.elements)[i * entry.elem_dims[1] + j];
+            }
+            else if (isSameType(entry.type, FLOAT64_T))
+            {
+                ((float *) newEntry.elements)[i * entry.elem_dims[1] + j] = ((float *) entry.elements)[j * entry.elem_dims[1] + i];
+            }
+        }
+    }
+    char *tmp = generateTmpTensorId();
+    addOrUpdateEntry(tmp,newEntry);
+    return createValueInfo(NULL,newEntry.type,tmp);
 }

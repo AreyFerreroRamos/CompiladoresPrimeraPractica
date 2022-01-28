@@ -19,9 +19,6 @@
   int num_dims_tensor = 0;	// Número de dimensiones del tensor.
   bool *ampliar_vector_dims; 	// Vector de booleanos para limitar la ampliación de memoria del vector de dimensiones a una sola por dimensión.
 
-  	// Variables para controlar el flujo de variables temporales en la symtab.
-  char **list_tmp_variables_symtab;
-  int num_tmp_variable = 0;
   extern int inFunction;
 %}
 
@@ -73,7 +70,16 @@ lista_de_sentencias : lista_de_sentencias sentencia | sentencia
 
 sentencia : asignacion
 	| expresion_aritmetica 	{
-					fprintf(yyout, "El resultado es %s\n", $1.value);
+					if($1.value != NULL)
+					{
+						fprintf(yyout, "El resultado es %s\n", $1.value);
+					}
+					else
+					{
+						sym_value_type entry = getEntry($1.lexema);
+						printTensor($1.lexema, entry, 1);
+						clearTmpTensorId();
+					}
 				}
 	| expresion_booleana 	{
 					char * boolValue = atoi($1.value) ? "true" : "false";

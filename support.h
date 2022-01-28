@@ -32,6 +32,11 @@ int maxNum(float a, float b);
  */
 int getAcumElemDim(int *elem_dim, int num_dim);
 
+/**
+ *
+ */
+char *generateTmpTensorId();
+
 // FUNCIONES PARA REALIZAR OPERACIONES
 
 /**
@@ -87,5 +92,15 @@ void controlParamsTranspose(elements_list params);
  *
  */
 value_info calculateFunctionLength(value_info element);
+
+/**
+ *
+ */
+value_info calculateFunctionSize(value_info element);
+
+/**
+ *
+ */
+value_info calculateFunctionTranspose(value_info matriz);
 
 #endif
