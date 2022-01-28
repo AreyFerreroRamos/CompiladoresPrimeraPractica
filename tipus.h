@@ -62,7 +62,6 @@ typedef struct
 	int num_elem;   // Número de elementos del tensor.
 } tensor_ini_info;
 
-
 typedef struct
 {
     value_info *elements;

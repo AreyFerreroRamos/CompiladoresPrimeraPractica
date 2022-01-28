@@ -348,25 +348,25 @@ void controlParamsZerosOnes(char *nameFunc, elements_list params)
 {
     if (params.numElem < 2)
     {
-        if (params.elements[0].value == NULL)
+        if (isSameType(params.elements[0].type, INT32_T) || isSameType(params.elements[0].type, FLOAT64_T))
         {
             for (int i = 1; i < params.numElem; i++)
             {
                 if (isSameType(params.elements[i].type, INT32_T) && params.elements[i].value != NULL)
                 {
                     if (atoi(params.elements[i].value) <= 0) {
-                        yyerror("La dimensión ha de ser mayor que 0.");
+                        yyerror("Las dimensiones del tensor han de ser números mayores que 0");
                     }
                 }
                 else
                 {
-                    yyerror("Los dimensiones del tensor tienen que ser números enteros.");
+                    yyerror("Los dimensiones del tensor tienen que ser números enteros");
                 }
             }
         }
         else
         {
-            yyerror(generateString("El primer parámetro de la función %s() tiene que ser un tensor", 1, nameFunc));
+            yyerror("El tipo de los elementos del tensor tiene que ser entero o real");
         }
     }
     else
@@ -415,7 +415,7 @@ value_info calculateFunctionSize(value_info element)
 {
     sym_value_type entry = getEntry(element.lexema);
     int *elems = malloc(entry.num_dim*4);
-    for(int i=0; i<entry.num_dim;i++)
+    for(int i = 0; i < entry.num_dim; i++)
     {
         elems[i] = entry.elem_dims[i];
     }
@@ -423,6 +423,32 @@ value_info calculateFunctionSize(value_info element)
     char *tmp = generateTmpTensorId();
     addOrUpdateEntry(tmp,newEntry);
     return createValueInfo(NULL,INT32_T,tmp);
+}
+
+value_info calculateFunctionZerosOnes(elements_list params, char *value)
+{
+    int *elem_dims = malloc((params.numElem - 1) * 4);
+    for (int i = 1; i < params.numElem; i++)
+    {
+        elem_dims[i] = atoi(params.elements[i].value);
+    }
+    int numElem = getAcumElemDim(elem_dims, params.numElem - 1);
+    void *elements = malloc(numElem * atoi(params.elements[0].value));
+    for (int i = 0; i < numElem; i++)
+    {
+        if (isSameType(params.elements[0].value, INT32_T))
+        {
+            ((int *) elements)[i] = atoi(value);
+        }
+        else
+        {
+            ((float *) elements)[i] = atof(value);
+        }
+    }
+    sym_value_type entry = createSymValueType(params.elements[0].value, NULL, numElem * atoi(params.elements[0].value), params.numElem - 1, elem_dims, elements);
+    char *tmp = generateTmpTensorId();
+    addOrUpdateEntry(tmp, entry);
+    return createValueInfo(NULL, entry.type, tmp);
 }
 
 value_info calculateFunctionTranspose(value_info matriz)

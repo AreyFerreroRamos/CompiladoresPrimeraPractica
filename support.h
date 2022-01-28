@@ -101,6 +101,11 @@ value_info calculateFunctionSize(value_info element);
 /**
  *
  */
+value_info calculateFunctionZerosOnes(elements_list params, char *value);
+
+/**
+ *
+ */
 value_info calculateFunctionTranspose(value_info matriz);
 
 #endif
