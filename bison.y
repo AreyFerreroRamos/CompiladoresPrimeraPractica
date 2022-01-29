@@ -72,28 +72,27 @@ sentencia : asignacion
 	| expresion_aritmetica 	{
 					if($1.value != NULL)
 					{
-						fprintf(yyout, "El resultado es %s\n", $1.value);
+						writeResult(generateString("La expresion aritmética es %s",1, $1.value));
 					}
 					else
 					{
 						sym_value_type entry = getEntry($1.lexema);
-						printTensor($1.lexema, entry, 1);
+						writeResult(printTensor($1.lexema, entry));
 						clearTmpTensorId();
 					}
 				}
 	| expresion_booleana 	{
-					char * boolValue = atoi($1.value) ? "true" : "false";
-					fprintf(yyout, "La expresion booleana es %s\n", boolValue);
+					writeResult(generateString("La expresion booleana es %s",1, $1.value));
 				}
 	| ID	{
 			sym_value_type entry = getEntry($1.lexema);
 			if (entry.num_dim > 0)
 			{
-				printTensor($1.lexema, entry, 1);
+				writeResult(printTensor($1.lexema, entry));
 			}
 			else
 			{
-				fprintf(yyout, "ID: %s val:%s\n", $1.lexema, (char *) entry.value);
+				writeResult(generateString("%s actualmente vale %s",2, $1.lexema, (char *) entry.value));
 			}
 		}
 
@@ -101,14 +100,14 @@ asignacion : ID ASSIGN expresion_aritmetica	{
 							if ($3.value != NULL) {
 								sym_value_type entry = createSymValueType($3.type,$3.value, calculateSizeType($3.type), 0, NULL, NULL);
 								addOrUpdateEntry($1.lexema, entry);
-								fprintf(yyout, "ID: %s pren per valor: %s\n", $1.lexema, (char *) entry.value);
+								writeResult(generateString( "%s = %s",2, $1.lexema,entry.value));
 							}
 							else
 							{
 								//Si expresion_aritmetica es un tensor.
 								sym_value_type entry = getEntry($3.lexema);
 								addOrUpdateEntry($1.lexema, entry);
-								printTensor($1.lexema, entry, 1);
+								writeResult(printTensor($1.lexema, entry));
 								clearTmpTensorId();
 							}
 						}
@@ -139,8 +138,8 @@ asignacion : ID ASSIGN expresion_aritmetica	{
 									}
 								}
 								addOrUpdateEntry($1.lexema, entry);
-								fprintf(yyout, "ID: %s pren per valor: %s a la posicio: %i\n", $1.lexema, (char *) $3.value, $1.calcIndex);
-                                 			}
+								writeResult(generateString("%s[%i] = %s ",3, $1.lexema,$1.calcIndex,$3.value));
+							}
 							else
 							{
 								yyerror("No se puede asignar un tensor a un indice de un tensor.");
@@ -149,18 +148,18 @@ asignacion : ID ASSIGN expresion_aritmetica	{
 	| ID ASSIGN expresion_booleana	{
 						sym_value_type entry = createSymValueType($3.type,$3.value, strlen($3.value), 0, NULL, NULL);
 						addOrUpdateEntry($1.lexema, entry);
-						fprintf(yyout, "ID: %s pren per valor: %s\n", $1.lexema, (char *) entry.value);
+						writeResult(generateString("%s = %s",2, $1.lexema, (char *) entry.value));
 					}
 	| ID ASSIGN concatenacion	{
 						sym_value_type entry = createSymValueType(STRING_T,$3, strlen($3), 0, NULL, NULL);
 						addOrUpdateEntry($1.lexema, entry);
-						fprintf(yyout, "ID: %s pren per valor: \"%s\"\n", $1.lexema, (char *) entry.value);
+						writeResult(generateString("%s = \"%s\"",2, $1.lexema, (char *) entry.value));
 					}
 	| ID ASSIGN tensor	{
 					invertVector(vector_dims_tensor, $3.dim);
 					sym_value_type entry = createSymValueType($3.type,NULL, calculateSizeType($3.type) * $3.num_elem, $3.dim, vector_dims_tensor, $3.elements);
 					addOrUpdateEntry($1.lexema, entry);
-					printTensor($1.lexema, entry, 1);
+					writeResult(printTensor($1.lexema, entry));
 					vector_dims_tensor = NULL;
 					ampliar_vector_dims = NULL;
 					num_dims_tensor = 0;

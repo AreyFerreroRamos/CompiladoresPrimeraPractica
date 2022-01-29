@@ -11,6 +11,8 @@ extern FILE *yyout;
 
 char **list_tmp_variables_symtab;
 int num_tmp_variable;
+int lengthResults =0;
+char **results;
 
 // FUNCIONES BASE PARA EJECUCIÓN DEL COMPILADOR
 
@@ -85,6 +87,44 @@ int end_analisi_sintactic()
 }
 
 // FUNCIONES DE UTILIDAD
+
+char *printTensorRec(void* elems,int *tensorDims,char * type,int numDims,int dim,int calcIndex){
+    int newCalcIndex,i;
+    char *result ="";
+    i=0;
+    do{
+        newCalcIndex = calcIndex * tensorDims[dim] + i;
+        if(numDims-1==dim){
+            result = i==0 ? result : generateString("%s, ",1,result);
+            result = generateString("%s%s",2,result,getVectorPosition(elems,newCalcIndex,type));
+        }else{
+            result = i==0 ? result : generateString("%s; ",1,result);
+            result = generateString("%s[%s]",2,result,printTensorRec(elems,tensorDims,type,numDims,dim+1,newCalcIndex));
+        }
+        i++;
+    }while (i<tensorDims[dim]);
+    result = dim ==0 ? generateString("[%s]",1,result) : result;
+    return result;
+}
+
+char *getVectorPosition(void *elems,int pos,char *type){
+    if(isSameType(type,INT32_T)){
+        return itos(((int*)elems)[pos]);
+    }else{
+        return ftos(((float*)elems)[pos]);
+    }
+}
+
+void printResults()
+{
+    printf("\n---------------------------------\n");
+    for (int i = 0; i < lengthResults; i++)
+    {
+        printf("%i\t%s\n",i, results[i]);
+        fprintf(yyout, "%i\t%s\n",i, results[i]);
+    }
+    printf("---------------------------------\n");
+}
 
 void isPossibleTensorProduct(int *elemDims1, int numDims1, int *elemDims2, int numDims2)
 {
@@ -346,9 +386,9 @@ void controlParamsSize(elements_list params)
 
 void controlParamsZerosOnes(char *nameFunc, elements_list params)
 {
-    if (params.numElem < 2)
+    if (params.numElem >= 2)
     {
-        if (isSameType(params.elements[0].type, INT32_T) || isSameType(params.elements[0].type, FLOAT64_T))
+        if (isSameType(params.elements[0].type,STRING_T) && (isSameType(params.elements[0].value,INT32_T) || isSameType(params.elements[0].value,FLOAT64_T)))
         {
             for (int i = 1; i < params.numElem; i++)
             {
@@ -366,7 +406,7 @@ void controlParamsZerosOnes(char *nameFunc, elements_list params)
         }
         else
         {
-            yyerror("El tipo de los elementos del tensor tiene que ser entero o real");
+            yyerror(generateString("El primer parámetro de la función %s() tiene que ser un String con el tipo del tensor (\"Int32\" o \"Float64\")", 1, nameFunc));
         }
     }
     else
@@ -419,7 +459,9 @@ value_info calculateFunctionSize(value_info element)
     {
         elems[i] = entry.elem_dims[i];
     }
-    sym_value_type newEntry = createSymValueType(INT32_T,NULL, entry.num_dim * 4, 1, &entry.num_dim,elems);
+    int *elemDims = malloc(sizeof(int));
+    elemDims[0]=entry.num_dim;
+    sym_value_type newEntry = createSymValueType(INT32_T,NULL, entry.num_dim * 4, 1, elemDims,elems);
     char *tmp = generateTmpTensorId();
     addOrUpdateEntry(tmp,newEntry);
     return createValueInfo(NULL,INT32_T,tmp);
@@ -432,7 +474,7 @@ value_info calculateFunctionZerosOnes(elements_list params, int value)
     int *elem_dims = malloc(numDims * 4);
     for (int i = 1; i < params.numElem; i++)
     {
-        elem_dims[i] = atoi(params.elements[i].value);
+        elem_dims[i-1] = atoi(params.elements[i].value);
     }
     int numElem = getAcumElemDim(elem_dims, numDims);
     void *elements = malloc(numElem * calculateSizeType(type));

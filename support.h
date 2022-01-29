@@ -15,6 +15,12 @@ int end_analisi_sintactic();
 
 // FUNCIONES DE UTILIDAD
 
+char *printTensorRec(void* elems,int *tensorDims,char * type,int numDims,int dim,int calcIndex);
+
+char *getVectorPosition(void *elems,int pos,char *type);
+
+void printResults();
+
 /**
  * Comprueba si las dimensiones de los tensores son compatibles para poder hacer el prodcto.
  * Si algo va mal devolverá alguno de los mensajes de error.

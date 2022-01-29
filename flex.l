@@ -32,157 +32,163 @@ id {lletra}({lletra}|{digit}|_({lletra}|{digit}))*
 
 %%
 
+\n	{
+		simpleDebug("\n\n", 0);
+		assignFounded = false;
+		corcheteOpenFounded = false;
+	}
+
 
 ({digit})+	{
-                debug("%s\n", yytext, 0);
+                simpleDebug("INTEGER ",0);
                 yylval.enter = atoi(yytext);
                 return INTEGER;
             }
 
 ({digit})+"."({digit})+(e(-)?({digit})+)?	{
-                                                debug("%s\n", yytext, 0);
+                                                simpleDebug("FLOAT ",0);
                                                 yylval.real = atof(yytext);
                                                 return FLOAT;
                                             }
 
 (true|false)	{
-                    debug("%s\n", yytext, 0);
+                    simpleDebug("BOOLEAN ",0);
                     yylval.cadena = strdup(yytext);
                     return BOOLEAN;
                 }
 
 (#(.)*|#=(.|\n)*=#) 	{
-                            debug("COMMENT: %s\n", yytext, 0);
+                            simpleDebug("COMMENT", 0);
                         }
 
 "^" {
-		debug("%s\n", yytext, 0);
+		simpleDebug("OP_ARIT_P1 ",0);
 		yylval.cadena = strdup(yytext);
 		return OP_ARIT_P1;
 	}
 
 ("/"|"%")	{
-                debug("%s\n", yytext, 0);
+                simpleDebug("OP_ARIT_P2 ",0);
                 yylval.cadena = strdup(yytext);
                 return OP_ARIT_P2;
             }
 
 "*"	{
-		debug("%s\n", yytext, 0);
+		simpleDebug("ASTERISCO ",0);
 		yylval.cadena = strdup(yytext);
 		return ASTERISCO;
 	}
 
 ("+")   {
-            debug("%s\n", yytext, 0);
+            simpleDebug("SUMA ",0);
             yylval.cadena = strdup(yytext);
             return SUMA;
         }
 
 ("-")   {
-            debug("%s\n", yytext, 0);
+            simpleDebug("RESTA ",0);
             yylval.cadena = strdup(yytext);
             return RESTA;
         }
 
 (">"|">="|"=="|"<="|"<"|"!=")	{
-                                    debug("%s\n", yytext, 0);
+                                    simpleDebug("OP_RELACIONAL ", 0);
                                     yylval.cadena = strdup(yytext);
                                     return OP_RELACIONAL;
                                 }
 
 "!"	{
-		debug("%s\n", yytext, 0);
+		simpleDebug("NEGACION ",0);
 		return NEGACION;
 	}
 
 &&  {
-        debug("%s\n", yytext, 0);
+        simpleDebug("OP_BOOL_AND ",0);
         return OP_BOOL_AND;
     }
 
 "||"	{
-            debug("%s\n", yytext, 0);
+            simpleDebug("OP_BOOL_OR ", 0);
             return OP_BOOL_OR;
         }
 
 "("	{
-		debug("%s\n", yytext, 0);
+        simpleDebug("PARENTESIS_ABIERTO ", 0);
 		return PARENTESIS_ABIERTO;
 	}
 
 ")"	{
-		debug("%s\n", yytext, 0);
+        simpleDebug("PARENTESIS_CERRADO ", 0);
 		return PARENTESIS_CERRADO;
 	}
 
 ,	{
-		debug("%s\n", yytext, 0);
+		simpleDebug("COMA ", 0);
 		return COMA;
 	}
 
 "div"	{
-            debug("%s\n", yytext, 0);
+            simpleDebug("DIV ", 0);
             inFunction++;
             return DIV;
         }
 
 "length"	{
-                debug("%s\n", yytext, 0);
+                simpleDebug("LENGTH ", 0);
                 inFunction++;
                 return LENGTH;
             }
 
 "size"  {
-            debug("%s\n", yytext, 0);
+            simpleDebug("SIZE ", 0);
             inFunction++;
             return SIZE;
         }
 
 "zeros" {
-            debug("%s\n", yytext, 0);
+            simpleDebug("ZEROS ", 0);
             inFunction++;
             return ZEROS;
         }
 
 "ones"  {
-            debug("%s\n", yytext, 0);
+            simpleDebug("ONES ", 0);
             inFunction++;
             return ONES;
         }
 
 "transpose" {
-                debug("%s\n", yytext, 0);
+                simpleDebug("TRANSPOSE ", 0);
                 inFunction++;
                 return TRANSPOSE;
             }
 
 "="	{
-		debug("%s\n", yytext, 0);
+		simpleDebug("ASSIGN ", 0);
 		assignFounded = true;
 		return ASSIGN;
 	}
 
 "["	{
-		debug("%s\n", yytext, 0);
+		simpleDebug("CORCHETE_ABIERTO ", 0);
 		corcheteOpenFounded = true;
 		return CORCHETE_ABIERTO;
 	}
 
 "]"	{
-		debug("%s\n", yytext, 0);
+		simpleDebug("CORCHETE_CERRADO ", 0);
 		return CORCHETE_CERRADO;
 	}
 
 ;	{
-		debug("%s\n", yytext, 0);
+		simpleDebug("PUNTO_Y_COMA ", 0);
 		return PUNTO_Y_COMA;
 	}
 
 {id}	{
             if (assignFounded == false && corcheteOpenFounded == false && inFunction == 0)
             {
-                debug("ID POINTER: %s\n", yytext, 0);
+                simpleDebug("ID ", 0);
                 yylval.ident.lexema = strdup(yytext);
                 yylval.ident.lenght = strlen(yytext);
                 yylval.ident.line = yylineno;
@@ -190,7 +196,7 @@ id {lletra}({lletra}|{digit}|_({lletra}|{digit}))*
             }
             else
             {
-                debug("ID ARIT: %s\n", yytext, 0);
+                simpleDebug("ID_ARIT ", 0);
                 sym_value_type entry;
                 int response = sym_lookup(yytext, &entry);
                 if (response == SYMTAB_OK)
@@ -230,16 +236,11 @@ id {lletra}({lletra}|{digit}|_({lletra}|{digit}))*
         }
 
 \"(\\.|[^\"])*\"	{
-                        debug("%s\n", yytext, 0);
+                        simpleDebug("STRING ", 0);
                         yylval.cadena = removeQuotationMarks(yytext);
                         return STRING;
                     }
 
-\n	{
-		debug("%s\n", yytext, 0);
-		assignFounded = false;
-		corcheteOpenFounded = false;
-	}
 
 .	{}
 

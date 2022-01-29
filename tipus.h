@@ -2,7 +2,7 @@
 
 #define TIPUS_H
 
-#define STR_MAX_LENGTH 200
+#define STR_MAX_LENGTH 1000
 #define INT_MAX_LENGTH_STR 10
 #define FLOAT_MAX_LENGTH_STR 20
 

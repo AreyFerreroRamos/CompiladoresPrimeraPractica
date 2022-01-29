@@ -10,8 +10,23 @@ extern FILE *yyout;
 extern char **list_tmp_variables_symtab;
 extern int num_tmp_variable;
 int inFunction = 0;
+extern int lengthResults;
+extern char **results;
 
 // FUNCIONES DE UTILIDAD
+
+void writeResult(char *result)
+{
+    if (results == NULL)
+    {
+        results = malloc(sizeof(char *));
+    }
+    else
+    {
+        results = realloc(results, (lengthResults + 1) * sizeof(char *));
+    }
+    results[lengthResults++] = strdup(result);
+}
 
 char *removeQuotationMarks(char *string1)
 {
@@ -146,7 +161,7 @@ void *joinTensorElements(void *elems1, char *type1, int nElem1, void *elems2, ch
     return aux;
 }
 
-void printfTensorBase(int numElem,char *type,void *elems){
+void printVector(int numElem,char *type,void *elems){
     printf("[");
     for (int i = 0; i < numElem; i++)
     {
@@ -162,40 +177,10 @@ void printfTensorBase(int numElem,char *type,void *elems){
     printf("]\n");
 }
 
-void printTensor(char *nameVar, sym_value_type tensor, int inFile)
+char *printTensor(char *nameVar, sym_value_type tensor)
 {
-	if (inFile)
-	{
-		fprintf(yyout, "%s[", nameVar);
-		for (int i = 0; i < (tensor.size / calculateSizeType(tensor.type)); i++)
-		{
-			if (isSameType(tensor.type, INT32_T))
-			{
-				fprintf(yyout, "%i,", ((int *) tensor.elements)[i]);
-			}
-			else if (isSameType(tensor.type, FLOAT64_T))
-			{
-				fprintf(yyout, "%.2f,", ((float *) tensor.elements)[i]);
-			}
-		}
-		fprintf(yyout, "]\n");
-	}
-	else
-	{
-		printf("%s[", nameVar);
-		for (int i = 0; i < (tensor.size / calculateSizeType(tensor.type)); i++)
-		{
-			if (isSameType(tensor.type, INT32_T))
-			{
-				printf("%i,", ((int *) tensor.elements)[i]);
-			}
-			else if (isSameType(tensor.type, FLOAT64_T))
-			{
-				printf("%f,", ((float *) tensor.elements)[i]);
-			}
-		}
-		printf("]\n");
-	}
+    char *res = printTensorRec(tensor.elements,tensor.elem_dims,tensor.type,tensor.num_dim,0,0);
+    return generateString("%s = %s",2,nameVar,res);
 }
 
 void printSymValueType(sym_value_type entry)

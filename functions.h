@@ -8,6 +8,8 @@
 
 // FUNCIONES DE UTILIDAD
 
+void writeResult(char *result);
+
 /**
  * Dada una cadena de carácteres, se retiran las comillas que
  * la delimitan para facilitar la operación de concatenación.
@@ -54,13 +56,13 @@ void *initializeTensorElements(char *value, char *type);
  */
 void *joinTensorElements(void *elems1, char *type1, int nElem1, void *elems2, char *type2, int nElem2);
 
-void printfTensorBase(int numElem,char *type,void *elems);
+void printVector(int numElem,char *type,void *elems);
 
 /**
  * Dado un tensor, el nombre de la variable i si se quiere imprimir en el archivo de salida o en consola
  * imprime los valores almacenados dentro del tensor de forma continua (como si fuese un vector de una dimensión).
  */
-void printTensor(char *nameVar, sym_value_type tensor, int inFile);
+char *printTensor(char *nameVar, sym_value_type tensor);
 
 /**
  * Dado un sym_value_type imprime su valor.
