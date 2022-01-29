@@ -656,12 +656,12 @@ value_info classifyFunction(char *nameFunc, elements_list params)
     else if (isSameType(nameFunc, FUNC_ZEROS))
     {
         controlParamsZerosOnes(nameFunc, params);
-        return calculateFunctionZerosOnes(params, "0");
+        return calculateFunctionZerosOnes(params, 0);
     }
     else if (isSameType(nameFunc, FUNC_ONES))
     {
         controlParamsZerosOnes(nameFunc, params);
-        return calculateFunctionZerosOnes(params, "1");
+        return calculateFunctionZerosOnes(params, 1);
     }
     else if (isSameType(nameFunc, FUNC_TRANSPOSE))
     {

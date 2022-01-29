@@ -425,27 +425,29 @@ value_info calculateFunctionSize(value_info element)
     return createValueInfo(NULL,INT32_T,tmp);
 }
 
-value_info calculateFunctionZerosOnes(elements_list params, char *value)
+value_info calculateFunctionZerosOnes(elements_list params, int value)
 {
-    int *elem_dims = malloc((params.numElem - 1) * 4);
+    int numDims = params.numElem - 1;
+    char *type = params.elements[0].value;
+    int *elem_dims = malloc(numDims * 4);
     for (int i = 1; i < params.numElem; i++)
     {
         elem_dims[i] = atoi(params.elements[i].value);
     }
-    int numElem = getAcumElemDim(elem_dims, params.numElem - 1);
-    void *elements = malloc(numElem * atoi(params.elements[0].value));
+    int numElem = getAcumElemDim(elem_dims, numDims);
+    void *elements = malloc(numElem * calculateSizeType(type));
     for (int i = 0; i < numElem; i++)
     {
-        if (isSameType(params.elements[0].value, INT32_T))
+        if (isSameType(type, INT32_T))
         {
-            ((int *) elements)[i] = atoi(value);
+            ((int *) elements)[i] = value;
         }
         else
         {
-            ((float *) elements)[i] = atof(value);
+            ((float *) elements)[i] = value;
         }
     }
-    sym_value_type entry = createSymValueType(params.elements[0].value, NULL, numElem * atoi(params.elements[0].value), params.numElem - 1, elem_dims, elements);
+    sym_value_type entry = createSymValueType(type, NULL, numElem * calculateSizeType(type), numDims, elem_dims, elements);
     char *tmp = generateTmpTensorId();
     addOrUpdateEntry(tmp, entry);
     return createValueInfo(NULL, entry.type, tmp);
