@@ -104,7 +104,7 @@ asignacion : ID ASSIGN expresion_aritmetica	{
 								writeResult(generateString("%s = %s", 2, $1.lexema, entry.value));
 							}
 							else
-							{	// Si la expresion aritmética es un tensor.
+							{	/* Si la expresion aritmética es un tensor. */
 								sym_value_type entry = getEntry($3.lexema);
 								addOrUpdateEntry($1.lexema, entry);
 								writeResult(printTensor($1.lexema, entry));
@@ -245,7 +245,7 @@ op_arit_p3 : SUMA	{
 
 lista_productos : lista_productos op_arit_p2 lista_potencias 	{
 									if (isNumberType($3.type))
-									{	// Incializar response en calculo de enteros y reales.
+									{	/* Incializar response en calculo de enteros y reales. */
 										int response = -1;
 										sym_value_type tmp;
 										if (isSameType($2, OP_ARIT_MULT))
@@ -390,8 +390,7 @@ id_arit : ID_ARIT	{
 				$$ = $1; 
 			}	
 	| lista_indices_arit CORCHETE_CERRADO	{
-							sym_value_type res;
-							sym_lookup($1.lexema, &res);
+							sym_value_type res = getEntry($1.lexema);
 							if (isSameType(res.type, INT32_T))
 							{
 								$$.value = itos(((int *) res.elements)[$1.calcIndex]);

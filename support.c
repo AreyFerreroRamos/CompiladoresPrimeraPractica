@@ -12,7 +12,7 @@ extern FILE *yyout;
 int lengthResults ;
 char **results;
 
-// FUNCIONES BASE PARA EJECUCIÓN DEL COMPILADOR
+/* FUNCIONES BASE PARA EJECUCIÓN DEL COMPILADOR */
 
 int init_analisi_lexic(char *file_name)
 {
@@ -84,7 +84,7 @@ int end_analisi_sintactic()
     return error;
 }
 
-// FUNCIONES DE UTILIDAD
+/* FUNCIONES DE UTILIDAD */
 
 char *printTensorRec(void* elems,int *tensorDims,char * type,int numDims,int dim,int calcIndex)
 {
@@ -185,26 +185,26 @@ int getAcumElemDim(int *elem_dim, int num_dim)
     return acum;
 }
 
-// FUNCIONES PARA REALIZAR OPERACIONES
+/* FUNCIONES PARA REALIZAR OPERACIONES */
 
 void intOperations(int num1, int num2, char *operand, int *res)
 {
-    if (strcmp(operand, OP_ARIT_SUMA) == 0)
+    if (isSameType(operand, OP_ARIT_SUMA))
     {
         simpleDebug("Estoy en suma\n", 1);
         *res = num1 + num2;
     }
-    else if (strcmp(operand, OP_ARIT_RESTA) == 0)
+    else if (isSameType(operand, OP_ARIT_RESTA))
     {
         simpleDebug("Estoy en resta\n", 1);
         *res = num1 - num2;
     }
-    else if (strcmp(operand, OP_ARIT_MULT) == 0)
+    else if (isSameType(operand, OP_ARIT_MULT))
     {
         simpleDebug("Estoy en producto\n", 1);
         *res = num1 * num2;
     }
-    else if (strcmp(operand, OP_ARIT_DIV) == 0)
+    else if (isSameType(operand, OP_ARIT_DIV))
     {
         simpleDebug("Estoy en division\n", 1);
         if (num2 != 0)
@@ -216,7 +216,7 @@ void intOperations(int num1, int num2, char *operand, int *res)
             yyerror("No se puede hacer la división si el divisor es 0");
         }
     }
-    else if (strcmp(operand, OP_ARIT_MOD) == 0)
+    else if (isSameType(operand, OP_ARIT_MOD))
     {
         simpleDebug("Estoy en modulo\n", 1);
         if (num2 != 0)
@@ -228,7 +228,7 @@ void intOperations(int num1, int num2, char *operand, int *res)
             yyerror("No se puede hacer el módulo si el divisor es 0");
         }
     }
-    else if (strcmp(operand, OP_ARIT_POTENCIA) == 0)
+    else if (isSameType(operand, OP_ARIT_POTENCIA))
     {
         simpleDebug("Estoy en la potencia\n", 1);
         *res = (int) pow((double) num1, (double) num2);
@@ -237,19 +237,19 @@ void intOperations(int num1, int num2, char *operand, int *res)
 
 void floatOperations(float num1, float num2, char *operand, float *res)
 {
-    if (strcmp(operand, OP_ARIT_SUMA) == 0)
+    if (isSameType(operand, OP_ARIT_SUMA))
     {
         *res = num1 + num2;
     }
-    else if (strcmp(operand, OP_ARIT_RESTA) == 0)
+    else if (isSameType(operand, OP_ARIT_RESTA))
     {
         *res = num1 - num2;
     }
-    else if (strcmp(operand, OP_ARIT_MULT) == 0)
+    else if (isSameType(operand, OP_ARIT_MULT))
     {
         *res = num1 * num2;
     }
-    else if (strcmp(operand, OP_ARIT_DIV) == 0)
+    else if (isSameType(operand, OP_ARIT_DIV))
     {
         if (num2 != 0)
         {
@@ -260,7 +260,7 @@ void floatOperations(float num1, float num2, char *operand, float *res)
             yyerror("No se puede hacer la división si el divisor es 0");
         }
     }
-    else if (strcmp(operand, OP_ARIT_POTENCIA) == 0)
+    else if (isSameType(operand, OP_ARIT_POTENCIA))
     {
         *res = (float) pow((double) num1, (double) num2);
     }
@@ -373,7 +373,6 @@ void controlParamsSize(elements_list params)
         yyerror("El número de parámetros de la función size() es 1");
     }
 }
-
 
 void controlParamsZerosOnes(char *nameFunc, elements_list params)
 {

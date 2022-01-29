@@ -9,7 +9,7 @@ extern int yylineno;
 char **list_tmp_variables_symtab;
 int num_tmp_variable;
 
-// FUNCIONES BASE PARA EJECUCIÓN DEL COMPILADOR
+/* FUNCIONES BASE PARA EJECUCIÓN DEL COMPILADOR */
 
 void yyerror(char *explanation)
 {
@@ -17,7 +17,7 @@ void yyerror(char *explanation)
     exit(EXIT_FAILURE);
 }
 
-// FUNCIONES DE UTILIDAD
+/* FUNCIONES DE UTILIDAD */
 
 char *generateTmpTensorId()
 {
@@ -212,7 +212,7 @@ char *generateString(char *message, int nArgs, ...)
     return strdup(string);
 }
 
-// FUNCIONES DE CONTROL DE ERRORES
+/* FUNCIONES DE CONTROL DE ERRORES */
 
 int isSameType(char *type1, char *type2)
 {

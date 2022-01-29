@@ -5,11 +5,11 @@
 #include "tipus.h"
 #include "symtab.h"
 
-// FUNCIONES BASE PARA EJECUCIÓN DEL COMPILADOR
+/* FUNCIONES BASE PARA EJECUCIÓN DEL COMPILADOR */
 
 void yyerror(char *);
 
-// FUNCIONES DE UTILIDAD
+/* FUNCIONES DE UTILIDAD */
 
 /**
  * Genera un nuevo nombre temporal cada vez que lo ejecutas.
@@ -79,7 +79,7 @@ sym_value_type createSymValueType(char *type, char *value, int size, int numDim,
  */
 char *generateString(char *message, int nArgs, ...);
 
-// FUNCIONES DE CONTROL DE ERRORES
+/* FUNCIONES DE CONTROL DE ERRORES */
 
 /**
  * Dados dos tipos comprueba que son iguales y en ese caso devuelve 1,

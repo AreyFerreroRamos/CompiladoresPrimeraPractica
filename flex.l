@@ -204,11 +204,11 @@ id      {lletra}({lletra}|{digit}|_({lletra}|{digit}))*
                 {
                     value_info v;
                     if (entry.value == NULL)
-                    {   // SI EL ID_ARIT ES TENSOR.
+                    {   /* SI EL ID_ARIT ES TENSOR. */
                         v = createValueInfo(NULL, entry.type, yytext);
                     }
                     else
-                    {    // SI EL ID_ARIT ES DE DIM 0.
+                    {    /* SI EL ID_ARIT ES DE DIM 0. */
                         v = createValueInfo(entry.value, entry.type, NULL);
                     }
                     if (isSameType(v.type, INT32_T) || isSameType(v.type, FLOAT64_T))

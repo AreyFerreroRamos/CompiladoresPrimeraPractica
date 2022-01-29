@@ -13,7 +13,7 @@ int inFunction = 0;
 extern int lengthResults;
 extern char **results;
 
-// FUNCIONES DE UTILIDAD
+/* FUNCIONES DE UTILIDAD */
 
 void writeResult(char *result)
 {
@@ -290,7 +290,7 @@ void asignacionTensor(sym_value_type *result, int posicion, value_info v1, value
     }
 }
 
-// FUNCIONES PARA REALIZAR OPERACIONES
+/* FUNCIONES PARA REALIZAR OPERACIONES */
 
 void doAritmeticOperation(value_info v1, char *operand, value_info v2, value_info *finish_val)
 {

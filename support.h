@@ -5,7 +5,7 @@
 #include "tipus.h"
 #include "utils.h"
 
-// FUNCIONES BASE PARA EJECUCIÓN DEL COMPILADOR
+/* FUNCIONES BASE PARA EJECUCIÓN DEL COMPILADOR */
 
 int init_analisi_lexic(char *);
 int init_analisi_sintactic(char *);
@@ -13,7 +13,7 @@ int analisi_semantic();
 int end_analisi_lexic();
 int end_analisi_sintactic();
 
-// FUNCIONES DE UTILIDAD
+/* FUNCIONES DE UTILIDAD */
 
 /**
  * La función retorna un string con el tensor (con el formato esperado por entrada).
@@ -49,7 +49,7 @@ int maxNum(float a, float b);
  */
 int getAcumElemDim(int *elem_dim, int num_dim);
 
-// FUNCIONES PARA REALIZAR OPERACIONES
+/* FUNCIONES PARA REALIZAR OPERACIONES */
 
 /**
  * Dados dos enteros y un operando aritmético, devuelve el resultado de la expresión

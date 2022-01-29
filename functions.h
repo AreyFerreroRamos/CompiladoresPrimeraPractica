@@ -6,7 +6,7 @@
 #include "utils.h"
 #include "support.h"
 
-// FUNCIONES DE UTILIDAD
+/* FUNCIONES DE UTILIDAD */
 
 /**
  * Almacena un nuevo resultado a ser impreso al final de la compilación.
@@ -93,7 +93,7 @@ value_info *addValueInfoBase(value_info *list, int numElem, value_info toAdd);
  */
 void asignacionTensor(sym_value_type *result, int posicion, value_info v1, value_info v2, char *op);
 
-// FUNCIONES PARA REALIZAR OPERACIONES
+/* FUNCIONES PARA REALIZAR OPERACIONES */
 
 /**
  * Dados dos operadores y un operando realiza la operacion y la almacena
