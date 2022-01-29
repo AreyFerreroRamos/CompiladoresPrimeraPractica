@@ -56,7 +56,7 @@ typedef struct
 
 typedef struct
 {
-	int dim;        // Dimension concreta que se esta evaluando actaulmente.
+	int dim;        // Dimensión concreta que se esta evaluando actaulmente.
 	char *type;     // Tipo concreto que se esta evaluando actualmente.
 	void *elements; // Valores dentro del componente.
 	int num_elem;   // Número de elementos del tensor.
@@ -64,7 +64,8 @@ typedef struct
 
 typedef struct
 {
-    value_info *elements;
-    int numElem;
+    value_info *elements;   // Elementos que integran la lista.
+    int numElem;            // Número de elementos de la lista.
 } elements_list;
+
 #endif

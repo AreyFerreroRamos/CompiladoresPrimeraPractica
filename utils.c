@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include <math.h>
 
 #include "utils.h"
 
@@ -40,15 +39,13 @@ char *generateTmpTensorId()
 
 void simpleDebug(char *text, int typeFile)
 {
-    // flex
     if (typeFile == 0)
-    {
-         printf(text);
+    {   /* flex */
+        //printf(text);
     }
-        // bison
     else
-    {
-        // printf(text);
+    {   /* bison */
+        //printf(text);
     }
 }
 
@@ -92,7 +89,7 @@ value_info saveTmpTensorInSymTab(char *type, sym_value_type entry)
 {
     char *id = generateTmpTensorId();
     addOrUpdateEntry(id, entry);
-    return createValueInfo(NULL,type,id);;
+    return createValueInfo(NULL, type,id);
 }
 
 value_info createValueInfo(char *value, char *type, char *lexema)
@@ -144,7 +141,7 @@ tensor_ini_info createTensorIniInfo(int dim, char *type, value_info *elements, i
     return aux;
 }
 
-sym_value_type createSymValueType(char *type,char *value, int size, int numDim, int *elemDims, void *elements)
+sym_value_type createSymValueType(char *type, char *value, int size, int numDim, int *elemDims, void *elements)
 {
     sym_value_type aux;
     if (type != NULL)
@@ -209,7 +206,7 @@ char *generateString(char *message, int nArgs, ...)
             sprintf(string, message, params[0], params[1], params[2], params[3], params[4], params[5], params[6]);
             break;
         default:
-            yyerror("Estas usando mal la función generateString(). nArgs debe estar entre 0 y 7.");
+            yyerror("Estas usando mal la función generateString(), nArgs debe estar entre 0 y 7");
             break;
     }
     return strdup(string);
@@ -227,22 +224,22 @@ int isNumberType(char *type)
     return (strcmp(type, INT32_T) == 0 || strcmp(type, FLOAT64_T) == 0);
 }
 
-sym_value_type getEntry(char* key)
+sym_value_type getEntry(char *key)
 {
     sym_value_type entry;
     int response = sym_lookup(key, &entry);
     if (response == SYMTAB_NOT_FOUND)
     {
-        yyerror(generateString("No se ha encontrado el elemento '%s' en la symtab.",1, key));
+        yyerror(generateString("No se ha encontrado el elemento '%s' en la symtab",1, key));
     }
     return entry;
 }
 
-void addOrUpdateEntry(char* key, sym_value_type entry)
+void addOrUpdateEntry(char *key, sym_value_type entry)
 {
     int response = sym_enter(key, &entry);
     if (response == SYMTAB_STACK_OVERFLOW)
     {
-        yyerror("No hay más memoria (añadiendo entrada).");
+        yyerror("No hay más memoria (añadiendo entrada)");
     }
 }

@@ -9,7 +9,7 @@
 // FUNCIONES DE UTILIDAD
 
 /**
- * Almacena un nuevo resultado a ser impreso al final de la compilación
+ * Almacena un nuevo resultado a ser impreso al final de la compilación.
  */
 void writeResult(char *result);
 
@@ -59,7 +59,10 @@ void *initializeTensorElements(char *value, char *type);
  */
 void *joinTensorElements(void *elems1, char *type1, int nElem1, void *elems2, char *type2, int nElem2);
 
-void printVector(int numElem,char *type,void *elems);
+/**
+ * Dado un vector, el número de elementos que contiene y su tipo; lo imprime por pantalla.
+ */
+void printVector(int numElem, char *type, void *elems);
 
 /**
  * Dado un tensor, el nombre de la variable i si se quiere imprimir en el archivo de salida o en consola
@@ -74,7 +77,7 @@ void printSymValueType(sym_value_type entry);
 
 /**
  * Borra todas las variables temporales que se hubiesen creado hasta el momento de ejecutar la función
- * y reinicia el numero del ID temporal
+ * y reinicia el numero del ID temporal.
  */
 void clearTmpTensorId();
 
@@ -134,7 +137,7 @@ void doNumberProductTensor(char *number, char *type, char *nameTensor, sym_value
 void doTensorProductTensor(char *nameVar1, char *nameVar2, sym_value_type *tmp);
 
 /**
- * Dado el nombre de una función y los parámetros se encarga de ejecutar la función y devolver el resultado
+ * Dado el nombre de una función y los parámetros se encarga de ejecutar la función y devolver el resultado.
  */
 value_info classifyFunction(char *nameFunc, elements_list params);
 

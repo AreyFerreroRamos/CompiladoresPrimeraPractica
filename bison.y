@@ -5,8 +5,8 @@
   #include <string.h>
 
   #include "tipus.h"
-  #include "functions.h"
   #include "utils.h"
+  #include "functions.h"
 
   #define YYLMAX 100
 
@@ -14,7 +14,7 @@
   extern int yylex();
   extern void yyerror(char *);
 
-  	// Variables necesarias para la inicialización de un tensor.
+  	/* Variables necesarias para la inicialización de un tensor. */
   int *vector_dims_tensor;	// Vector con el número de elementos de cada dimensión del tensor.
   int num_dims_tensor = 0;	// Número de dimensiones del tensor.
   bool *ampliar_vector_dims; 	// Vector de booleanos para limitar la ampliación de memoria del vector de dimensiones a una sola por dimensión.
@@ -23,16 +23,16 @@
 %}
 
 %code requires {
-  #include "functions.h"
-  #include "utils.h"
   #include "tipus.h"
+  #include "utils.h"
+  #include "functions.h"
 }
 
 %union {
 	struct {
-		char *lexema;
-		int lenght;
-		int line;
+	    char *lexema;   // Nombre del identificador.
+	    int lenght;     // Tamaño en bytes del identificador.
+	    int line;       // Línea en la que se encuentra el identificador.
 	} ident;
 	int enter;
 	float real;
@@ -70,9 +70,9 @@ lista_de_sentencias : lista_de_sentencias sentencia | sentencia
 
 sentencia : asignacion
 	| expresion_aritmetica 	{
-					if($1.value != NULL)
+					if ($1.value != NULL)
 					{
-						writeResult(generateString("La expresion aritmética es %s",1, $1.value));
+						writeResult(generateString("La expresion aritmética es %s.", 1, $1.value));
 					}
 					else
 					{
@@ -82,7 +82,7 @@ sentencia : asignacion
 					}
 				}
 	| expresion_booleana 	{
-					writeResult(generateString("La expresion booleana es %s",1, $1.value));
+					writeResult(generateString("La expresion booleana es %s.", 1, $1.value));
 				}
 	| ID	{
 			sym_value_type entry = getEntry($1.lexema);
@@ -92,26 +92,26 @@ sentencia : asignacion
 			}
 			else
 			{
-				writeResult(generateString("%s actualmente vale %s",2, $1.lexema, (char *) entry.value));
+				writeResult(generateString("%s actualmente vale %s.", 2, $1.lexema, (char *) entry.value));
 			}
 		}
 
 asignacion : ID ASSIGN expresion_aritmetica	{
-							if ($3.value != NULL) {
-								sym_value_type entry = createSymValueType($3.type,$3.value, calculateSizeType($3.type), 0, NULL, NULL);
+							if ($3.value != NULL)
+							{
+								sym_value_type entry = createSymValueType($3.type, $3.value, calculateSizeType($3.type), 0, NULL, NULL);
 								addOrUpdateEntry($1.lexema, entry);
-								writeResult(generateString( "%s = %s",2, $1.lexema,entry.value));
+								writeResult(generateString("%s = %s", 2, $1.lexema, entry.value));
 							}
 							else
-							{
-								//Si expresion_aritmetica es un tensor.
+							{	// Si la expresion aritmética es un tensor.
 								sym_value_type entry = getEntry($3.lexema);
 								addOrUpdateEntry($1.lexema, entry);
 								writeResult(printTensor($1.lexema, entry));
 								clearTmpTensorId();
 							}
 						}
-	| id ASSIGN expresion_aritmetica	{	
+	| id ASSIGN expresion_aritmetica	{
 							if ($3.value != NULL)
 							{
 								sym_value_type entry = getEntry($1.lexema);
@@ -128,7 +128,7 @@ asignacion : ID ASSIGN expresion_aritmetica	{
 								}
 								else if (isSameType(entry.type, FLOAT64_T))
 								{
-									if (isSameType($3.type,INT32_T))
+									if (isSameType($3.type, INT32_T))
 									{
 										((float *) entry.elements)[$1.calcIndex] = atoi($3.value);
 									}
@@ -138,26 +138,26 @@ asignacion : ID ASSIGN expresion_aritmetica	{
 									}
 								}
 								addOrUpdateEntry($1.lexema, entry);
-								writeResult(generateString("%s[%i] = %s ",3, $1.lexema,$1.calcIndex,$3.value));
+								writeResult(generateString("%s[%i] = %s", 3, $1.lexema, $1.calcIndex, $3.value));
 							}
 							else
 							{
-								yyerror("No se puede asignar un tensor a un indice de un tensor.");
+								yyerror("No se puede asignar un tensor a un indice de un tensor");
 							}
 						}
 	| ID ASSIGN expresion_booleana	{
-						sym_value_type entry = createSymValueType($3.type,$3.value, strlen($3.value), 0, NULL, NULL);
+						sym_value_type entry = createSymValueType($3.type, $3.value, strlen($3.value), 0, NULL, NULL);
 						addOrUpdateEntry($1.lexema, entry);
-						writeResult(generateString("%s = %s",2, $1.lexema, (char *) entry.value));
+						writeResult(generateString("%s = %s", 2, $1.lexema, (char *) entry.value));
 					}
 	| ID ASSIGN concatenacion	{
-						sym_value_type entry = createSymValueType(STRING_T,$3, strlen($3), 0, NULL, NULL);
+						sym_value_type entry = createSymValueType(STRING_T, $3, strlen($3), 0, NULL, NULL);
 						addOrUpdateEntry($1.lexema, entry);
-						writeResult(generateString("%s = \"%s\"",2, $1.lexema, (char *) entry.value));
+						writeResult(generateString("%s = \"%s\"", 2, $1.lexema, (char *) entry.value));
 					}
 	| ID ASSIGN tensor	{
 					invertVector(vector_dims_tensor, $3.dim);
-					sym_value_type entry = createSymValueType($3.type,NULL, calculateSizeType($3.type) * $3.num_elem, $3.dim, vector_dims_tensor, $3.elements);
+					sym_value_type entry = createSymValueType($3.type, NULL, calculateSizeType($3.type) * $3.num_elem, $3.dim, vector_dims_tensor, $3.elements);
 					addOrUpdateEntry($1.lexema, entry);
 					writeResult(printTensor($1.lexema, entry));
 					vector_dims_tensor = NULL;
@@ -170,33 +170,33 @@ id : lista_indices CORCHETE_CERRADO	{
 					}
    
 lista_indices : lista_indices COMA expresion_aritmetica	{
-							if (isSameType($3.type, INT32_T)) 
-							{
-								int dim = getDim($1.lexema, $1.index_dim);
-								if (dim != -1) 
+								if (isSameType($3.type, INT32_T))
 								{
-									$$ = createTensorInfo($1.index_dim + 1, $1.calcIndex * dim + atoi($3.value), $1.lexema);
+									int dim = getDim($1.lexema, $1.index_dim);
+									if (dim != -1)
+									{
+										$$ = createTensorInfo($1.index_dim + 1, $1.calcIndex * dim + atoi($3.value), $1.lexema);
+									}
+									else
+									{
+										yyerror("Valor de indice fuera de los limites del tensor");
+									}
 								}
 								else
 								{
-									yyerror("Valor de indice fuera de los limites del tensor");
+									yyerror(generateString("El indice %s no es de tipo INT32_T", 1, $3.value));
 								}
 							}
-							else
-							{
-								yyerror(generateString("El indice %s no es de tipo INT32_T",1, $3.value));
-							}
-						}
 		| ID CORCHETE_ABIERTO expresion_aritmetica	{
-		      						if (isSameType($3.type, INT32_T))
-								{
-									$$ = createTensorInfo(1, atoi($3.value), $1.lexema);
+									if (isSameType($3.type, INT32_T))
+									{
+										$$ = createTensorInfo(1, atoi($3.value), $1.lexema);
+									}
+									else
+									{
+										yyerror(generateString("El indice %s no es de tipo INT32_T", 1, $3.value));
+									}
 								}
-								else
-								{
-									yyerror(generateString("El indice %s no es de tipo INT32_T",1, $3.value));
-								}
-		     					}
 
 concatenacion : concatenacion ASTERISCO STRING 	{
 							$$ = generateString("%s%s", 2, $1, $3);
@@ -214,24 +214,25 @@ lista_sumas : lista_sumas op_arit_p3 lista_productos	{
 									if (doTensorCalcs($1.lexema, $3.lexema, $2, &tmp) == 0)
 									{
 										$$ = saveTmpTensorInSymTab(getNewType($1.type, $3.type), tmp);
-									}else{
+									}
+									else
+									{
 										doAritmeticOperation($1, $2, $3, &$$);
-
 									}
 								}
 								else
 								{
-									yyerror(generateString("No se puede hacer operaciones aritmeticas con el tipo %s",1,$3.type));
+									yyerror(generateString("No se puede hacer operaciones aritmeticas con el tipo %s", 1, $3.type));
 								}
 							}	
-		| lista_productos	{ 	
+		| lista_productos	{
 						if (isNumberType($1.type))
 						{
 							$$ = createValueInfo($1.value, $1.type, $1.lexema);
 						}
 						else
 						{
-							yyerror(generateString("No se puede hacer operaciones aritmeticas con el tipo %s",1,$1.type));
+							yyerror(generateString("No se puede hacer operaciones aritmeticas con el tipo %s", 1, $1.type));
 						}
 					}
 
@@ -244,11 +245,10 @@ op_arit_p3 : SUMA	{
 
 lista_productos : lista_productos op_arit_p2 lista_potencias 	{
 									if (isNumberType($3.type))
-									{
-										//Incializar response en calculo de enteros y reales
+									{	// Incializar response en calculo de enteros y reales.
 										int response = -1;
 										sym_value_type tmp;
-										if (strcmp($2, OP_ARIT_MULT) == 0)
+										if (isSameType($2, OP_ARIT_MULT))
 										{
 											response = doTensorProductInit($1.lexema, $3.lexema, &tmp);
 										}
@@ -277,13 +277,13 @@ lista_productos : lista_productos op_arit_p2 lista_potencias 	{
 											}
 											else
 											{
-												yyerror("Los tensores no admiten la división.");
+												yyerror("Los tensores no admiten la división");
 											}
 										}
 									}
 									else
 									{
-										yyerror(generateString("No se puede hacer operaciones aritmeticas con el tipo %s",1,$3.type));
+										yyerror(generateString("No se puede hacer operaciones aritmeticas con el tipo %s", 1, $3.type));
 									}
 								}
 		| lista_potencias	{
@@ -293,7 +293,7 @@ lista_productos : lista_productos op_arit_p2 lista_potencias 	{
 						}
 						else
 						{
-							yyerror(generateString("No se puede hacer operaciones aritmeticas con el tipo %s",1,$1.type));
+							yyerror(generateString("No se puede hacer operaciones aritmeticas con el tipo %s", 1, $1.type));
 						}
 					}
 
@@ -311,7 +311,7 @@ lista_potencias : lista_potencias OP_ARIT_P1 terminal_aritmetico	{
 										}
 										else
 										{
-											yyerror(generateString("No se puede hacer operaciones aritmeticas con el tipo %s",1,$3.type));
+											yyerror(generateString("No se puede hacer operaciones aritmeticas con el tipo %s", 1, $3.type));
 										}
 									}
 		| terminal_aritmetico	{
@@ -321,25 +321,25 @@ lista_potencias : lista_potencias OP_ARIT_P1 terminal_aritmetico	{
 						}
 						else
 						{
-							yyerror(generateString("No se puede hacer operaciones aritmeticas con el tipo %s",1,$1.type));
+							yyerror(generateString("No se puede hacer operaciones aritmeticas con el tipo %s", 1, $1.type));
 						}
 					}
 
 terminal_aritmetico : INTEGER	{
 					$$ = createValueInfo(itos($1), INT32_T, NULL);
 				}
-	| FLOAT		{
-				$$ = createValueInfo(ftos($1), FLOAT64_T, NULL);
-			}
-	| id_arit 	{
-				$$ = createValueInfo($1.value, $1.type, $1.lexema);
-			}
-	| PARENTESIS_ABIERTO expresion_aritmetica PARENTESIS_CERRADO	{
-        										$$ = $2;
-        								}
-	| funcion	{
-				$$ = $1;
-			}
+		| FLOAT		{
+					$$ = createValueInfo(ftos($1), FLOAT64_T, NULL);
+				}
+		| id_arit 	{
+					$$ = createValueInfo($1.value, $1.type, $1.lexema);
+				}
+		| PARENTESIS_ABIERTO expresion_aritmetica PARENTESIS_CERRADO	{
+											$$ = $2;
+										}
+		| funcion	{
+					$$ = $1;
+				}
 
 funcion : id_func PARENTESIS_ABIERTO lista_params PARENTESIS_CERRADO	{
 										$$ = classifyFunction($1, $3);
@@ -405,37 +405,37 @@ id_arit : ID_ARIT	{
 						}
 
 lista_indices_arit : lista_indices_arit COMA expresion_aritmetica	{
-									if (isSameType($3.type, INT32_T)) 
+										if (isSameType($3.type, INT32_T))
+										{
+											int dim = getDim($1.lexema, $1.index_dim);
+											if (dim != -1)
+											{
+												$$ = createTensorInfo($1.index_dim + 1, $1.calcIndex * dim + atoi($3.value), $1.lexema);
+											}
+											else
+											{
+												yyerror("Se han excedido los límites de las dimensiones del tensor");
+											}
+										}
+										else
+										{
+											char *error = allocateSpaceForMessage();
+											sprintf(error, "Index %s is not type Int32", $3.type);
+											yyerror(error);
+										}
+									}
+		| ID_ARIT CORCHETE_ABIERTO expresion_aritmetica	{
+									if (isSameType($3.type, INT32_T))
 									{
-										int dim = getDim($1.lexema, $1.index_dim);
-										if (dim != -1) 
-										{
-											$$ = createTensorInfo($1.index_dim + 1, $1.calcIndex * dim + atoi($3.value), $1.lexema);
-										}
-										else 
-										{
-											yyerror("Array out of bound.");
-										}
+										$$ = createTensorInfo(1, atoi($3.value), $1.lexema);
 									}
 									else
 									{
-										char * error = allocateSpaceForMessage();
+										char *error = allocateSpaceForMessage();
 										sprintf(error, "Index %s is not type Int32", $3.type);
 										yyerror(error);
-									}					
+									}
 								}
-		| ID_ARIT CORCHETE_ABIERTO expresion_aritmetica	{
-	   							if (isSameType($3.type, INT32_T)) 
-								{
-									$$ = createTensorInfo(1, atoi($3.value), $1.lexema);
-								}
-								else
-								{
-									char * error = allocateSpaceForMessage();
-									sprintf(error, "Index %s is not type Int32", $3.type);
-									yyerror(error);
-								}
-							}
 
 expresion_booleana : lista_or	{
 					$$ = $1;
@@ -477,15 +477,15 @@ expresion_booleana_base : NEGACION expresion_relacional	{
 						}
 
 expresion_relacional : expresion_aritmetica OP_RELACIONAL expresion_aritmetica	{
-									if (isSameType($1.type, $3.type))
-									{
-										$$ = createValueInfo(doRelationalOperation($1, $2, $3), BOOLEAN_T, $1.lexema);
-									}
-									else
-									{
-										yyerror(generateString("Cannot do comparation %s %s %s", 3, $1.value, $2, $3.value));
-									}
-								}
+											if (isSameType($1.type, $3.type))
+											{
+												$$ = createValueInfo(doRelationalOperation($1, $2, $3), BOOLEAN_T, $1.lexema);
+											}
+											else
+											{
+												yyerror(generateString("Cannot do comparation %s %s %s", 3, $1.value, $2, $3.value));
+											}
+										}
 			| terminal_booleano	{
 							$$ = $1;
 						}
@@ -532,24 +532,24 @@ componente : lista_valores	{
 			}
 
 lista_valores : lista_valores COMA expresion_aritmetica	{
-							void *elements = joinTensorElements($1.elements, $1.type, $1.num_elem, initializeTensorElements($3.value, $3.type), $3.type, 1);
-							$$ = createTensorIniInfo(0, getNewType($1.type, $3.type), elements, $1.num_elem + 1);
-							if (ampliar_vector_dims[0])
-							{
-								vector_dims_tensor[0] += 1;
+								void *elements = joinTensorElements($1.elements, $1.type, $1.num_elem, initializeTensorElements($3.value, $3.type), $3.type, 1);
+								$$ = createTensorIniInfo(0, getNewType($1.type, $3.type), elements, $1.num_elem + 1);
+								if (ampliar_vector_dims[0])
+								{
+									vector_dims_tensor[0] += 1;
+								}
 							}
-						}
 		| expresion_aritmetica	{
-					$$ = createTensorIniInfo(0, $1.type,initializeTensorElements($1.value,$1.type), 1);
-					if (ampliar_vector_dims == NULL)
-					{
-						ampliar_vector_dims = malloc(1);
-                                                ampliar_vector_dims[0] = true;
-						vector_dims_tensor = malloc(4);
-						vector_dims_tensor[0] = 1;
-						num_dims_tensor++;
+						$$ = createTensorIniInfo(0, $1.type, initializeTensorElements($1.value, $1.type), 1);
+						if (ampliar_vector_dims == NULL)
+						{
+							ampliar_vector_dims = malloc(1);
+							ampliar_vector_dims[0] = true;
+							vector_dims_tensor = malloc(4);
+							vector_dims_tensor[0] = 1;
+							num_dims_tensor++;
+						}
 					}
-				}
 
 
 %%

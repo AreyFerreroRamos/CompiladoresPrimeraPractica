@@ -86,30 +86,39 @@ int end_analisi_sintactic()
 
 // FUNCIONES DE UTILIDAD
 
-char *printTensorRec(void* elems,int *tensorDims,char * type,int numDims,int dim,int calcIndex){
-    int newCalcIndex,i;
-    char *result ="";
-    i=0;
-    do{
+char *printTensorRec(void* elems,int *tensorDims,char * type,int numDims,int dim,int calcIndex)
+{
+    int newCalcIndex, i;
+    char *result = "";
+    i = 0;
+    do
+    {
         newCalcIndex = calcIndex * tensorDims[dim] + i;
-        if(numDims-1==dim){
-            result = i==0 ? result : generateString("%s, ",1,result);
-            result = generateString("%s%s",2,result,getVectorPosition(elems,newCalcIndex,type));
-        }else{
-            result = i==0 ? result : generateString("%s; ",1,result);
-            result = generateString("%s[%s]",2,result,printTensorRec(elems,tensorDims,type,numDims,dim+1,newCalcIndex));
+        if (numDims - 1 == dim)
+        {
+            result = i == 0 ? result : generateString("%s, ",1, result);
+            result = generateString("%s%s",2, result, getVectorPosition(elems,newCalcIndex, type));
+        }
+        else
+        {
+            result = i == 0 ? result : generateString("%s; ",1, result);
+            result = generateString("%s[%s]",2, result, printTensorRec(elems, tensorDims, type, numDims,dim + 1,newCalcIndex));
         }
         i++;
-    }while (i<tensorDims[dim]);
-    result = dim ==0 ? generateString("[%s]",1,result) : result;
+    } while (i < tensorDims[dim]);
+    result = dim == 0 ? generateString("[%s]",1, result) : result;
     return result;
 }
 
-char *getVectorPosition(void *elems,int pos,char *type){
-    if(isSameType(type,INT32_T)){
-        return itos(((int*)elems)[pos]);
-    }else{
-        return ftos(((float*)elems)[pos]);
+char *getVectorPosition(void *elems, int pos, char *type)
+{
+    if (isSameType(type,INT32_T))
+    {
+        return itos(((int *) elems)[pos]);
+    }
+    else
+    {
+        return ftos(((float *) elems)[pos]);
     }
 }
 
@@ -118,8 +127,8 @@ void printResults()
     printf("\n---------------------------------\n");
     for (int i = 0; i < lengthResults; i++)
     {
-        printf("%i\t%s\n",i, results[i]);
-        fprintf(yyout, "%i\t%s\n",i, results[i]);
+        printf("%i\t%s\n", i, results[i]);
+        fprintf(yyout, "%i\t%s\n", i, results[i]);
     }
     printf("---------------------------------\n");
 }
@@ -127,7 +136,7 @@ void printResults()
 void isPossibleTensorProduct(int *elemDims1, int numDims1, int *elemDims2, int numDims2)
 {
     if (numDims1 <= 2 && numDims2 <= 2)
-    {	// Si son matrices o vectores.
+    {	/* Si son matrices o vectores. */
         int nColsMatrix1, nRowsMatrix2;
         if (numDims1 == 1)
         {
@@ -140,11 +149,13 @@ void isPossibleTensorProduct(int *elemDims1, int numDims1, int *elemDims2, int n
         nRowsMatrix2 = elemDims2[0];
         if (nColsMatrix1 != nRowsMatrix2)
         {
-            yyerror("Los indices de los tensores no son compatibles y no se puede realizar el producto.");
+            yyerror("Los indices de los tensores no son compatibles y no se puede realizar el producto");
         }
 
-    }else{
-        yyerror("No esta permitido multiplicar tensores de dimensión superior a 2.");
+    }
+    else
+    {
+        yyerror("No esta permitido multiplicar tensores de dimensión superior a 2");
     }
 }
 
@@ -173,7 +184,6 @@ int getAcumElemDim(int *elem_dim, int num_dim)
     }
     return acum;
 }
-
 
 // FUNCIONES PARA REALIZAR OPERACIONES
 
@@ -338,9 +348,9 @@ void controlParamsLength(elements_list params)
 {
     if (params.numElem == 1)
     {
-        if ( !isSameType(params.elements[0].type, STRING_T) && params.elements[0].value != NULL)
+        if (!isSameType(params.elements[0].type, STRING_T) && params.elements[0].value != NULL)
         {
-            yyerror("La función length sólo puede calcular la longitud de una cadena o el número de elementos de un tensor.");
+            yyerror("La función length sólo puede calcular la longitud de una cadena o el número de elementos de un tensor");
         }
     }
     else
@@ -355,7 +365,7 @@ void controlParamsSize(elements_list params)
     {
         if (params.elements[0].value != NULL)
         {
-            yyerror("La función size sólo puede retornar las dimensiones de un tensor.");
+            yyerror("La función size sólo puede retornar las dimensiones de un tensor");
         }
     }
     else
@@ -375,7 +385,8 @@ void controlParamsZerosOnes(char *nameFunc, elements_list params)
             {
                 if (isSameType(params.elements[i].type, INT32_T) && params.elements[i].value != NULL)
                 {
-                    if (atoi(params.elements[i].value) <= 0) {
+                    if (atoi(params.elements[i].value) <= 0)
+                    {
                         yyerror("Las dimensiones del tensor han de ser números mayores que 0");
                     }
                 }
@@ -435,13 +446,13 @@ value_info calculateFunctionLength(value_info element)
 value_info calculateFunctionSize(value_info element)
 {
     sym_value_type entry = getEntry(element.lexema);
-    int *elems = malloc(entry.num_dim*4);
-    for(int i = 0; i < entry.num_dim; i++)
+    int *elems = malloc(entry.num_dim * 4);
+    for (int i = 0; i < entry.num_dim; i++)
     {
         elems[i] = entry.elem_dims[i];
     }
     int *elemDims = malloc(sizeof(int));
-    elemDims[0]=entry.num_dim;
+    elemDims[0] = entry.num_dim;
     sym_value_type newEntry = createSymValueType(INT32_T,NULL, entry.num_dim * 4, 1, elemDims,elems);
     return saveTmpTensorInSymTab(INT32_T,newEntry);
 }
@@ -469,7 +480,7 @@ value_info calculateFunctionZerosOnes(elements_list params, int value)
         }
     }
     sym_value_type entry = createSymValueType(type, NULL, numElem * calculateSizeType(type), numDims, elem_dims, elements);
-    return saveTmpTensorInSymTab(entry.type,entry);
+    return saveTmpTensorInSymTab(entry.type, entry);
 }
 
 value_info calculateFunctionTranspose(value_info matriz)

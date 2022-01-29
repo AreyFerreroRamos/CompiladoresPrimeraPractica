@@ -27,32 +27,33 @@
 
 lletra	[a-zA-Z]
 digit	[0-9]
-id {lletra}({lletra}|{digit}|_({lletra}|{digit}))*
+id      {lletra}({lletra}|{digit}|_({lletra}|{digit}))*
 
 
 %%
 
-\n	{
+
+\n  {
 		simpleDebug("\n\n", 0);
 		assignFounded = false;
 		corcheteOpenFounded = false;
-	}
+    }
 
 
 ({digit})+	{
-                simpleDebug("INTEGER ",0);
+                simpleDebug("INTEGER ", 0);
                 yylval.enter = atoi(yytext);
                 return INTEGER;
             }
 
 ({digit})+"."({digit})+(e(-)?({digit})+)?	{
-                                                simpleDebug("FLOAT ",0);
+                                                simpleDebug("FLOAT ", 0);
                                                 yylval.real = atof(yytext);
                                                 return FLOAT;
                                             }
 
 (true|false)	{
-                    simpleDebug("BOOLEAN ",0);
+                    simpleDebug("BOOLEAN ", 0);
                     yylval.cadena = strdup(yytext);
                     return BOOLEAN;
                 }
@@ -62,31 +63,31 @@ id {lletra}({lletra}|{digit}|_({lletra}|{digit}))*
                         }
 
 "^" {
-		simpleDebug("OP_ARIT_P1 ",0);
+		simpleDebug("OP_ARIT_P1 ", 0);
 		yylval.cadena = strdup(yytext);
 		return OP_ARIT_P1;
 	}
 
 ("/"|"%")	{
-                simpleDebug("OP_ARIT_P2 ",0);
+                simpleDebug("OP_ARIT_P2 ", 0);
                 yylval.cadena = strdup(yytext);
                 return OP_ARIT_P2;
             }
 
 "*"	{
-		simpleDebug("ASTERISCO ",0);
+		simpleDebug("ASTERISCO ", 0);
 		yylval.cadena = strdup(yytext);
 		return ASTERISCO;
 	}
 
 ("+")   {
-            simpleDebug("SUMA ",0);
+            simpleDebug("SUMA ", 0);
             yylval.cadena = strdup(yytext);
             return SUMA;
         }
 
 ("-")   {
-            simpleDebug("RESTA ",0);
+            simpleDebug("RESTA ", 0);
             yylval.cadena = strdup(yytext);
             return RESTA;
         }
@@ -98,12 +99,12 @@ id {lletra}({lletra}|{digit}|_({lletra}|{digit}))*
                                 }
 
 "!"	{
-		simpleDebug("NEGACION ",0);
+		simpleDebug("NEGACION ", 0);
 		return NEGACION;
 	}
 
 &&  {
-        simpleDebug("OP_BOOL_AND ",0);
+        simpleDebug("OP_BOOL_AND ", 0);
         return OP_BOOL_AND;
     }
 
@@ -203,11 +204,11 @@ id {lletra}({lletra}|{digit}|_({lletra}|{digit}))*
                 {
                     value_info v;
                     if (entry.value == NULL)
-                    {   // SI EL ID_ARIT ES TENSOR
+                    {   // SI EL ID_ARIT ES TENSOR.
                         v = createValueInfo(NULL, entry.type, yytext);
                     }
                     else
-                    {    // SI EL ID_ARIT ES DE DIM 0
+                    {    // SI EL ID_ARIT ES DE DIM 0.
                         v = createValueInfo(entry.value, entry.type, NULL);
                     }
                     if (isSameType(v.type, INT32_T) || isSameType(v.type, FLOAT64_T))
@@ -228,7 +229,7 @@ id {lletra}({lletra}|{digit}|_({lletra}|{digit}))*
                 }
                 else
                 {
-                    char * error = allocateSpaceForMessage();
+                    char *error = allocateSpaceForMessage();
                     sprintf(error, "The id %s is not initialized.", yytext);
                     yyerror(error);
                 }
@@ -240,7 +241,6 @@ id {lletra}({lletra}|{digit}|_({lletra}|{digit}))*
                         yylval.cadena = removeQuotationMarks(yytext);
                         return STRING;
                     }
-
 
 .	{}
 

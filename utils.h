@@ -12,13 +12,13 @@ void yyerror(char *);
 // FUNCIONES DE UTILIDAD
 
 /**
- * Genera un nuevo nombre temporal cada vez que lo ejecutas
+ * Genera un nuevo nombre temporal cada vez que lo ejecutas.
  */
 char *generateTmpTensorId();
 
 /**
  * Función que hace un printf del texto pasado.
- * typeFile identificara si pertenece a flex (0) o bison/funciones (1).
+ * El parámetro typeFile identificara si pertenece a flex (0) o bison/funciones (1).
  */
 void simpleDebug(char *text, int typeFile);
 
@@ -42,11 +42,10 @@ char *allocateSpaceForMessage();
  */
 int calculateSizeType(char *type);
 
-
 /**
  * Dado el tipo del tensor y una entrada de la symtab con la información
  * del tensor, lo guarda con un nombre temporal y devuelve un value_info
- * con lexema = tmpName
+ * con lexema = tmpName.
  */
 value_info saveTmpTensorInSymTab(char *type, sym_value_type entry);
 
@@ -72,7 +71,7 @@ tensor_ini_info createTensorIniInfo(int dim, char *type, value_info *elements, i
  * Dados los campos necesarios para crear una entrada en la tabla de símbolos,
  * se genera una estructura (sym_value_type) que contiene dichos campos y se devuele.
  */
-sym_value_type createSymValueType(char *type,char *value, int size, int numDim, int *elemDims, void *elements);
+sym_value_type createSymValueType(char *type, char *value, int size, int numDim, int *elemDims, void *elements);
 
 /**
  * Dado un texto con "%s donde quiera poner un argumento, el numero de argumentos, y los argumentos
@@ -98,12 +97,12 @@ int isNumberType(char *type);
  * La función busca en la symtab la variable y la devuelve. Si se produce algún error
  * se lanzará un yyerror().
  */
-sym_value_type getEntry(char* key);
+sym_value_type getEntry(char *key);
 
 /**
  * La función añade o actualiza (si ya existía) una entrada en la symtab. Si se produce algún error
  * se lanzará un yyerror().
  */
-void addOrUpdateEntry(char* key, sym_value_type entry);
+void addOrUpdateEntry(char *key, sym_value_type entry);
 
 #endif

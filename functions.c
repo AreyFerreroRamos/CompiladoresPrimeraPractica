@@ -98,7 +98,7 @@ void invertVector(int *vector, int dim)
 	int aux;
 	int i;
 	for (i = 0; i < dim / 2; i++)
-	{	// Invertir el vector.
+	{	/* Invertir el vector. */
 		aux = vector[i];
 		vector[i] = vector[dim - i - 1];
 		vector[dim - i - 1] = aux;
@@ -123,10 +123,10 @@ void *initializeTensorElements(char *value, char *type)
 
 void *joinTensorElements(void *elems1, char *type1, int nElem1, void *elems2, char *type2, int nElem2)
 {
-	char *typefinal = getNewType(type1,type2);
-    void *aux = realloc(elems1, calculateSizeType(typefinal)*(nElem1+nElem2));
+	char *typefinal = getNewType(type1, type2);
+    void *aux = realloc(elems1, calculateSizeType(typefinal) * (nElem1 + nElem2));
 	if (isSameType(typefinal, INT32_T))
-	{	// Si la lista final se trata como entera.
+	{	/* Si la lista final se trata como entera. */
 		int i = nElem1;
 		for (int j = 0; j < nElem2; j++)
 		{
@@ -134,7 +134,7 @@ void *joinTensorElements(void *elems1, char *type1, int nElem1, void *elems2, ch
 		}
 	}
 	else
-	{	// Si la lista final se trata como float.
+	{	/* Si la lista final se trata como float. */
 		int i = nElem1;
 		if (isSameType(type1, INT32_T))
 		{
@@ -144,14 +144,14 @@ void *joinTensorElements(void *elems1, char *type1, int nElem1, void *elems2, ch
 			}
 		}
 		if (isSameType(type2, INT32_T))
-		{	// Si los valores se tratan como enteros.
+		{	/* Si los valores se tratan como enteros. */
 			for (int j = 0; j < nElem2; j++)
 			{
 				((float *) aux)[i++] = ((int *) elems2)[j];
 			}
 		}
 		else if (isSameType(type2, FLOAT64_T))
-		{	// Si los valores se tratan como float.
+		{	/* Si los valores se tratan como float. */
 			for (int j = 0; j < nElem2; j++)
 			{
 				((float *) aux)[i++] = ((float *) elems2)[j];
@@ -161,7 +161,7 @@ void *joinTensorElements(void *elems1, char *type1, int nElem1, void *elems2, ch
     return aux;
 }
 
-void printVector(int numElem,char *type,void *elems){
+void printVector(int numElem, char *type, void *elems){
     printf("[");
     for (int i = 0; i < numElem; i++)
     {
@@ -180,14 +180,14 @@ void printVector(int numElem,char *type,void *elems){
 char *printTensor(char *nameVar, sym_value_type tensor)
 {
     char *res = printTensorRec(tensor.elements,tensor.elem_dims,tensor.type,tensor.num_dim,0,0);
-    return generateString("%s = %s",2,nameVar,res);
+    return generateString("%s = %s",2, nameVar, res);
 }
 
 void printSymValueType(sym_value_type entry)
 {
 	printf("------------------------\n");
-	printf("TYPE: %s\n", (char *)entry.type);
-	printf("VALUE: %s\n", (char *)entry.value);
+	printf("TYPE: %s\n", (char *) entry.type);
+	printf("VALUE: %s\n", (char *) entry.value);
 	printf("SIZE: %i\n", entry.size);
 	printf("NUM DIM: %i\n", entry.num_dim);
 	if (entry.num_dim > 0)
@@ -209,7 +209,7 @@ void clearTmpTensorId()
 		int response = sym_remove(list_tmp_variables_symtab[i]);
 		if (response != SYMTAB_OK)
 		{
-			printf("ALGO MALO HA PASADO BORRANDO LAS VARIABLES.");
+			yyerror("ALGO MALO HA PASADO BORRANDO LAS VARIABLES");
 		}
 	}
 	free(list_tmp_variables_symtab);
@@ -294,7 +294,6 @@ void asignacionTensor(sym_value_type *result, int posicion, value_info v1, value
 
 void doAritmeticOperation(value_info v1, char *operand, value_info v2, value_info *finish_val)
 {
-
 	if (strcmp(v1.type, INT32_T) == 0 && strcmp(v2.type, INT32_T) == 0)
 	{
 		finish_val->type = INT32_T;
@@ -340,24 +339,24 @@ char *doRelationalOperation(value_info v1, char *op, value_info v2)
 int doTensorCalcs(char *nameVar1, char *nameVar2, char *operation, sym_value_type *tmp)
 {
 	if (nameVar1 != NULL && nameVar2 != NULL)
-	{	// Si las dos variables son tensores.
+	{	/* Si las dos variables son tensores. */
 		sym_value_type entry1;
 		int response1 = sym_lookup(nameVar1, &entry1);
 		sym_value_type entry2;
 		int response2 = sym_lookup(nameVar2, &entry2);
 		if (response1 == SYMTAB_OK && response2 == SYMTAB_OK)
-		{	// Si las dos variables existen.
+		{	/* Si las dos variables existen. */
 			if (entry1.num_dim == entry2.num_dim)
-			{	// Si los dos tensores tienen el mismo numero de dimensiones.
+			{	/* Si los dos tensores tienen el mismo numero de dimensiones. */
 				for (int i = 0; i < entry1.num_dim; i++)
-				{	// Si los dos tensores tienen el mismo número de elementos en cada dimension.
+				{	/* Si los dos tensores tienen el mismo número de elementos en cada dimension. */
 					if (entry1.elem_dims[i] != entry2.elem_dims[i])
 					{
 						return -5;
 					}
 				}
 				if (isSameType(entry1.type, FLOAT64_T) || isSameType(entry2.type, FLOAT64_T))
-				{	// Si alguno de los dos tipos es float.
+				{	/* Si alguno de los dos tipos es float. */
 					tmp->type = FLOAT64_T;
 				}
 				else
@@ -366,7 +365,7 @@ int doTensorCalcs(char *nameVar1, char *nameVar2, char *operation, sym_value_typ
 				}
 				tmp->value = NULL;
 				if (entry1.size == entry2.size)
-				{	// Si tienen el mismo tamaño (son del mismo tipo).
+				{	/* Si tienen el mismo tamaño (son del mismo tipo). */
 					tmp->size = entry1.size;
 				}
 				else
@@ -385,7 +384,7 @@ int doTensorCalcs(char *nameVar1, char *nameVar2, char *operation, sym_value_typ
 				tmp->elements = malloc(tmp->size);
 				int cont = tmp->size / calculateSizeType(tmp->type);
 				for (int i = 0; i < cont; i++)
-				{	// Por cada elemento hacemos operación.
+				{	/* Por cada elemento hacemos operación. */
 					value_info v1;
 					v1.lexema = nameVar1;
 					v1.type = entry1.type;
@@ -400,35 +399,35 @@ int doTensorCalcs(char *nameVar1, char *nameVar2, char *operation, sym_value_typ
 			}
 			else
 			{
-                yyerror("No se pueden sumar o restar tensores con diferentes dimensiones.");
+                yyerror("No se pueden sumar o restar tensores con diferentes dimensiones");
 			}
 		}
 		else
 		{
-            yyerror("Ha habido un error buscando una variable en la symtab.");
+            yyerror("Ha habido un error buscando una variable en la symtab");
 		}
 	}
 	else if (nameVar1 == NULL && nameVar2 == NULL)
-	{	// Si las dos variables son numeros.
+	{	/* Si las dos variables son numeros. */
 		return 1;
 	}
 	else 
 	{
-        yyerror("No se puede sumar un tensor con un número.");
+        yyerror("No se puede sumar un tensor con un número");
 	}
 }
 
 int doTensorProductInit(char *nameVar1, char *nameVar2, sym_value_type *tmp)
 {
 	if (nameVar1 != NULL && nameVar2 != NULL)
-	{	// Si las dos variables son tensores.
+	{	/* Si las dos variables son tensores. */
 		sym_value_type entry1;
 		sym_lookup(nameVar1, &entry1);
 		sym_value_type entry2;
 		sym_lookup(nameVar2, &entry2);
 
 		isPossibleTensorProduct(entry1.elem_dims, entry1.num_dim, entry2.elem_dims, entry2.num_dim);
-        // Los tensores se pueden multiplicar.
+        /* Los tensores se pueden multiplicar. */
         if (isSameType(entry1.type, FLOAT64_T) || isSameType(entry2.type, FLOAT64_T))
         {
             tmp->type = FLOAT64_T;
@@ -476,16 +475,15 @@ int doTensorProductInit(char *nameVar1, char *nameVar2, sym_value_type *tmp)
         }
         tmp->size = getAcumElemDim(tmp->elem_dims, tmp->num_dim) * calculateSizeType(tmp->type);
         tmp->elements = malloc(tmp->size);
-        // MUTLIPLICACION DE DOS TENSORES.
+        /* MUTLIPLICACION DE DOS TENSORES. */
         return 0;
 	}
 	else if (nameVar1 == NULL && nameVar2 == NULL)
-	{	// Si las dos variables son números.
+	{	/* Si las dos variables son números. */
 		return -1;
 	}
 	else
-	{	// Si una es valor i la otra es un tensor.
-		// HACER VALOR POR CADA UNO DE LOS VALORES DEL TENSOR.
+	{	/* Si una es valor i la otra es un tensor. HACER VALOR POR CADA UNO DE LOS VALORES DEL TENSOR. */
 		return -2;
 	}
 }
@@ -535,7 +533,7 @@ void doTensorProductTensor(char *nameVar1, char *nameVar2, sym_value_type *tmp)
     for (int i = 0; i < rowsM1; i++)
     {
         for (int j = 0; j < colsM2; j++)
-        {   // Si transponemos el vector para poder multiplicarlo hay que trasponer los índices.
+        {   /* Si transponemos el vector para poder multiplicarlo hay que trasponer los índices. */
             rFinal = colsM2 == 1 ? j : i;
             cFinal = colsM2 == 1 ? i : j;
             if (isSameType(tmp->type, INT32_T))
