@@ -22,22 +22,20 @@
   extern int inFunction;
 %}
 
-%code requires {
+%code requires
+{
   #include "tipus.h"
   #include "utils.h"
   #include "functions.h"
 }
 
-%union {
-	struct {
-	    char *lexema;   // Nombre del identificador.
-	    int lenght;     // Tamaño en bytes del identificador.
-	    int line;       // Línea en la que se encuentra el identificador.
-	} ident;
+%union
+{
 	int enter;
 	float real;
 	char *cadena;
 	value_info operand;
+	ident_info ident_info;
 	elements_list elements_list;
 	tensor_info tensor_info;
 	tensor_ini_info tensor_ini_info;
@@ -49,7 +47,7 @@
 %token <enter> INTEGER
 %token <real> FLOAT
 %token <cadena> STRING OP_ARIT_P1 OP_ARIT_P2 ASTERISCO SUMA RESTA OP_RELACIONAL BOOLEAN
-%token <ident> ID 
+%token <ident_info> ID
 %token <operand> ID_ARIT
 
 %type <operand> expresion_aritmetica lista_sumas lista_productos lista_potencias terminal_aritmetico id_arit expresion_booleana lista_or lista_and expresion_booleana_base expresion_relacional terminal_booleano funcion param

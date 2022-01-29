@@ -13,6 +13,7 @@
   #include <string.h>
 
   #include "bison.tab.h"
+  #include "tipus.h"
   #include "utils.h"
   #include "functions.h"
 
@@ -190,9 +191,9 @@ id      {lletra}({lletra}|{digit}|_({lletra}|{digit}))*
             if (assignFounded == false && corcheteOpenFounded == false && inFunction == 0)
             {
                 simpleDebug("ID ", 0);
-                yylval.ident.lexema = strdup(yytext);
-                yylval.ident.lenght = strlen(yytext);
-                yylval.ident.line = yylineno;
+                yylval.ident_info.lexema = strdup(yytext);
+                yylval.ident_info.lenght = strlen(yytext);
+                yylval.ident_info.line = yylineno;
                 return ID;
             }
             else

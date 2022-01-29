@@ -42,6 +42,13 @@
 
 typedef struct
 {
+    char *lexema;   // Nombre del identificador.
+    int lenght;     // Tamaño en bytes del identificador.
+    int line;       // Línea en la que se encuentra el identificador.
+} ident_info;
+
+typedef struct
+{
     char *value;    // Valor del elemento.
 	char *type;     // Tipo del elemenento.
 	char *lexema;   // Nombre de var en caso de ser ID_ARIT.
