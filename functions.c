@@ -202,29 +202,6 @@ void printSymValueType(sym_value_type entry)
 	printf("------------------------\n\n");
 }
 
-void saveTmpTensorInSymTab(value_info *val, char *type1, char *type2, sym_value_type entry)
-{
-	char *id = generateTmpTensorId();
-	int message = sym_enter(id, &entry);
-	if (message != SYMTAB_OK && message != SYMTAB_DUPLICATE)
-	{
-		yyerror("Error al guardar en symtab.");
-	}
-	else
-	{
-		if (isSameType(type1, FLOAT64_T) || isSameType(type2, FLOAT64_T))
-		{
-			val->type = FLOAT64_T;
-		}
-		else
-		{
-			val->type = INT32_T;
-		}
-		val->value = NULL;
-		val->lexema = id;
-	}
-}
-
 void clearTmpTensorId()
 {
 	for (int i = 0; i < num_tmp_variable; i++)
@@ -358,24 +335,6 @@ char *doRelationalOperation(value_info v1, char *op, value_info v2)
         return TRUE_VALUE;
     }
     return FALSE_VALUE;
-}
-
-int lenght(char *key)
-{
-	sym_value_type entry;
-	int response = sym_lookup(key, &entry);
-	if (response == SYMTAB_OK)
-	{
-		return entry.size;
-	}
-	else if (response == SYMTAB_NOT_FOUND)
-	{
-		return strlen(key);
-	}
-	else
-	{
-		return -1;
-	}
 }
 
 int doTensorCalcs(char *nameVar1, char *nameVar2, char *operation, sym_value_type *tmp)

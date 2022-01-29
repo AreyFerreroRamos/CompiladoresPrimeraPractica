@@ -12,6 +12,11 @@ void yyerror(char *);
 // FUNCIONES DE UTILIDAD
 
 /**
+ * Genera un nuevo nombre temporal cada vez que lo ejecutas
+ */
+char *generateTmpTensorId();
+
+/**
  * Función que hace un printf del texto pasado.
  * typeFile identificara si pertenece a flex (0) o bison/funciones (1).
  */
@@ -36,6 +41,14 @@ char *allocateSpaceForMessage();
  * Dado un tipo devuelve el tamaño en bytes.
  */
 int calculateSizeType(char *type);
+
+
+/**
+ * Dado el tipo del tensor y una entrada de la symtab con la información
+ * del tensor, lo guarda con un nombre temporal y devuelve un value_info
+ * con lexema = tmpName
+ */
+value_info saveTmpTensorInSymTab(char *type, sym_value_type entry);
 
 /**
  * Dados los datos necesarios para crear una entrada en la symtab,

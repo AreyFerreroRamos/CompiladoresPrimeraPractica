@@ -9,9 +9,7 @@ extern int yyparse();
 extern FILE *yyin;
 extern FILE *yyout;
 
-char **list_tmp_variables_symtab;
-int num_tmp_variable;
-int lengthResults =0;
+int lengthResults ;
 char **results;
 
 // FUNCIONES BASE PARA EJECUCIÓN DEL COMPILADOR
@@ -176,23 +174,6 @@ int getAcumElemDim(int *elem_dim, int num_dim)
     return acum;
 }
 
-char *generateTmpTensorId()
-{
-    char *id;
-    if (list_tmp_variables_symtab == NULL)
-    {
-        list_tmp_variables_symtab = malloc(sizeof(char *));
-    }
-    else
-    {
-        list_tmp_variables_symtab = realloc(list_tmp_variables_symtab, (num_tmp_variable + 1) * sizeof(char *));
-    }
-    id = (char *) malloc(sizeof(char) * TMP_ID_MAX_LENGTH);
-    sprintf(id, "%s%i", TMP_BASE_ID, num_tmp_variable);
-    list_tmp_variables_symtab[num_tmp_variable] = id;
-    num_tmp_variable++;
-    return id;
-}
 
 // FUNCIONES PARA REALIZAR OPERACIONES
 
@@ -462,9 +443,7 @@ value_info calculateFunctionSize(value_info element)
     int *elemDims = malloc(sizeof(int));
     elemDims[0]=entry.num_dim;
     sym_value_type newEntry = createSymValueType(INT32_T,NULL, entry.num_dim * 4, 1, elemDims,elems);
-    char *tmp = generateTmpTensorId();
-    addOrUpdateEntry(tmp,newEntry);
-    return createValueInfo(NULL,INT32_T,tmp);
+    return saveTmpTensorInSymTab(INT32_T,newEntry);
 }
 
 value_info calculateFunctionZerosOnes(elements_list params, int value)
@@ -490,9 +469,7 @@ value_info calculateFunctionZerosOnes(elements_list params, int value)
         }
     }
     sym_value_type entry = createSymValueType(type, NULL, numElem * calculateSizeType(type), numDims, elem_dims, elements);
-    char *tmp = generateTmpTensorId();
-    addOrUpdateEntry(tmp, entry);
-    return createValueInfo(NULL, entry.type, tmp);
+    return saveTmpTensorInSymTab(entry.type,entry);
 }
 
 value_info calculateFunctionTranspose(value_info matriz)
@@ -517,7 +494,5 @@ value_info calculateFunctionTranspose(value_info matriz)
             }
         }
     }
-    char *tmp = generateTmpTensorId();
-    addOrUpdateEntry(tmp,newEntry);
-    return createValueInfo(NULL,newEntry.type,tmp);
+    return saveTmpTensorInSymTab(newEntry.type,newEntry);
 }

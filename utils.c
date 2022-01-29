@@ -7,6 +7,8 @@
 #include "utils.h"
 
 extern int yylineno;
+char **list_tmp_variables_symtab;
+int num_tmp_variable;
 
 // FUNCIONES BASE PARA EJECUCIÓN DEL COMPILADOR
 
@@ -17,6 +19,24 @@ void yyerror(char *explanation)
 }
 
 // FUNCIONES DE UTILIDAD
+
+char *generateTmpTensorId()
+{
+    char *id;
+    if (list_tmp_variables_symtab == NULL)
+    {
+        list_tmp_variables_symtab = malloc(sizeof(char *));
+    }
+    else
+    {
+        list_tmp_variables_symtab = realloc(list_tmp_variables_symtab, (num_tmp_variable + 1) * sizeof(char *));
+    }
+    id = (char *) malloc(sizeof(char) * TMP_ID_MAX_LENGTH);
+    sprintf(id, "%s%i", TMP_BASE_ID, num_tmp_variable);
+    list_tmp_variables_symtab[num_tmp_variable] = id;
+    num_tmp_variable++;
+    return id;
+}
 
 void simpleDebug(char *text, int typeFile)
 {
@@ -68,6 +88,12 @@ int calculateSizeType(char *type)
     }
 }
 
+value_info saveTmpTensorInSymTab(char *type, sym_value_type entry)
+{
+    char *id = generateTmpTensorId();
+    addOrUpdateEntry(id, entry);
+    return createValueInfo(NULL,type,id);;
+}
 
 value_info createValueInfo(char *value, char *type, char *lexema)
 {

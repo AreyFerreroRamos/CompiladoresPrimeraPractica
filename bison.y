@@ -213,7 +213,7 @@ lista_sumas : lista_sumas op_arit_p3 lista_productos	{
 									sym_value_type tmp;
 									if (doTensorCalcs($1.lexema, $3.lexema, $2, &tmp) == 0)
 									{
-										saveTmpTensorInSymTab(&$$, $1.type, $3.type, tmp);
+										$$ = saveTmpTensorInSymTab(getNewType($1.type, $3.type), tmp);
 									}else{
 										doAritmeticOperation($1, $2, $3, &$$);
 
@@ -255,7 +255,7 @@ lista_productos : lista_productos op_arit_p2 lista_potencias 	{
 										if (response == 0)
 										{
 											doTensorProductTensor($1.lexema, $3.lexema, &tmp);
-											saveTmpTensorInSymTab(&$$, $1.type, $3.type, tmp);
+											$$ = saveTmpTensorInSymTab(getNewType($1.type, $3.type), tmp);
 										}
 										else if (response == -2)
 										{
@@ -267,7 +267,7 @@ lista_productos : lista_productos op_arit_p2 lista_potencias 	{
 											{
 												doNumberProductTensor($3.value, $3.type, $1.lexema, &tmp);
 											}
-											saveTmpTensorInSymTab(&$$, $1.type, $3.type, tmp);
+											$$ = saveTmpTensorInSymTab(getNewType($1.type, $3.type), tmp);
 										}
 										else if (response == -1)
 										{
@@ -337,20 +337,6 @@ terminal_aritmetico : INTEGER	{
 	| PARENTESIS_ABIERTO expresion_aritmetica PARENTESIS_CERRADO	{
         										$$ = $2;
         								}
-        /*| DIV PARENTESIS_ABIERTO expresion_aritmetica COMA expresion_aritmetica PARENTESIS_CERRADO	{
-        									if ((isSameType($3.type,INT32_T)) && (isSameType($5.type,INT32_T)))
-        									{
-        										doAritmeticOperation($3, "/", $5, &$$);
-        									}
-        									else
-        									{
-        										yyerror("Algún parámetro no es un entero");
-        									}
-        								}
-        | LENGTH PARENTESIS_ABIERTO STRING PARENTESIS_CERRADO	{
-							$$ = createValueInfo(itos(lenght($3)), INT32_T, NULL);
-						}*/
-
 	| funcion	{
 				$$ = $1;
 			}

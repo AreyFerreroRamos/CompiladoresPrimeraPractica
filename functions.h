@@ -8,6 +8,9 @@
 
 // FUNCIONES DE UTILIDAD
 
+/**
+ * Almacena un nuevo resultado a ser impreso al final de la compilación
+ */
 void writeResult(char *result);
 
 /**
@@ -70,12 +73,8 @@ char *printTensor(char *nameVar, sym_value_type tensor);
 void printSymValueType(sym_value_type entry);
 
 /**
- *
- */
-void saveTmpTensorInSymTab(value_info *val, char *type1, char *type2, sym_value_type entry);
-
-/**
- *
+ * Borra todas las variables temporales que se hubiesen creado hasta el momento de ejecutar la función
+ * y reinicia el numero del ID temporal
  */
 void clearTmpTensorId();
 
@@ -86,7 +85,8 @@ void clearTmpTensorId();
 value_info *addValueInfoBase(value_info *list, int numElem, value_info toAdd);
 
 /**
- *
+ * Dado un tensor, una posicion, dos operadores y un operando, se encarga de realizar la operación
+ * e introducir el valor en la posición indicada del tensor.
  */
 void asignacionTensor(sym_value_type *result, int posicion, value_info v1, value_info v2, char *op);
 
@@ -105,21 +105,8 @@ void doAritmeticOperation(value_info v1, char *operand, value_info v2, value_inf
 char *doRelationalOperation(value_info v1, char *op, value_info v2);
 
 /**
- * Dado un string comprueba si es una key de la tabla de simbolos.
- * Si es una key devuelve el size guardado en la variable, sino devuelve
- * el strlen() del string pasado como parámetro. En el caso que al buscar
- * en la tabla de símbolos de un error distinto a no encontrado se devolverá -1.
- */
-int lenght(char *key);
-
-/**
  * Dados dos nombres de tensores y una operación (suma o resta) realiza la operación y la almacena en un entrada de la symtab
- * con el nombre "tmp_for_tesor_result". Si algo va mal devolverá alguno de los mensajes de error.
- *  0 -> EJECUCIÓN CORRECTA, SE HAN CALCULADO LAS MATRICES Y LA ALMACENA EN SYMTAB
- * -1 -> ERROR, SE INTENTA SUMAR TENSOR CON VALOR
- * -2 -> NO SON TENSORES NINGUNO DE LOS DOS
- * -3 -> ERROR, ALGUN TENSOR NO ESTA DEFINIDO EN LA SYMTAB
- * -4 -> ERROR, LOS TENSORES SON DE DIFERENTE DIMENSION
+ * con el nombre "tmp_for_tesor_result". Si algo va mal se ejecutara la función yyerror().
  */
 int doTensorCalcs(char *nameVar1, char *nameVar2, char *operation, sym_value_type *tmp);
 
@@ -147,7 +134,7 @@ void doNumberProductTensor(char *number, char *type, char *nameTensor, sym_value
 void doTensorProductTensor(char *nameVar1, char *nameVar2, sym_value_type *tmp);
 
 /**
- *
+ * Dado el nombre de una función y los parámetros se encarga de ejecutar la función y devolver el resultado
  */
 value_info classifyFunction(char *nameFunc, elements_list params);
 
