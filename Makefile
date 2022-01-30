@@ -25,7 +25,7 @@ BIN = executable
 LFLAGS = -n 
 YFLAGS = -d -v
 OTHERS = bison.tab.h bison.output sortida.txt
-TEST_FILE = fitxerDeProves.txt
+TEST_FILE = fitxerDeProves.jl
 EXIT_FILE = sortida.txt
 
 ######################################################################
