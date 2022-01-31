@@ -81,17 +81,11 @@ id      {lletra}({lletra}|{digit}|_({lletra}|{digit}))*
 		return ASTERISCO;
 	}
 
-("+")   {
-            simpleDebug("SUMA ", 0);
-            yylval.cadena = strdup(yytext);
-            return SUMA;
-        }
-
-("-")   {
-            simpleDebug("RESTA ", 0);
-            yylval.cadena = strdup(yytext);
-            return RESTA;
-        }
+("+"|"-")   {
+                simpleDebug("OP_ARIT_P3 ", 0);
+                yylval.cadena = strdup(yytext);
+                return OP_ARIT_P3;
+            }
 
 (">"|">="|"=="|"<="|"<"|"!=")	{
                                     simpleDebug("OP_RELACIONAL ", 0);

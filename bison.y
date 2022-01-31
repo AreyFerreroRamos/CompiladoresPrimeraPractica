@@ -46,14 +46,14 @@
 %token <no_definit> ASSIGN OP_BOOL_AND OP_BOOL_OR NEGACION COMA PUNTO_Y_COMA PARENTESIS_ABIERTO PARENTESIS_CERRADO CORCHETE_ABIERTO CORCHETE_CERRADO DIV LENGTH SIZE ZEROS ONES TRANSPOSE
 %token <enter> INTEGER
 %token <real> FLOAT
-%token <cadena> STRING OP_ARIT_P1 OP_ARIT_P2 ASTERISCO SUMA RESTA OP_RELACIONAL BOOLEAN
+%token <cadena> STRING OP_ARIT_P1 OP_ARIT_P2 ASTERISCO OP_ARIT_P3 SUMA RESTA OP_RELACIONAL BOOLEAN
 %token <ident_info> ID
 %token <operand> ID_ARIT
 
 %type <operand> expresion_aritmetica lista_sumas lista_productos lista_potencias terminal_aritmetico id_arit expresion_booleana lista_or lista_and expresion_booleana_base expresion_relacional terminal_booleano funcion param
 %type <tensor_info> id lista_indices lista_indices_arit
 %type <tensor_ini_info> tensor componente lista_componentes lista_valores
-%type <cadena> op_arit_p3 op_arit_p2 concatenacion id_func
+%type <cadena> op_arit_p2 concatenacion id_func
 %type <elements_list> lista_params
 
 %start programa
@@ -205,7 +205,7 @@ concatenacion : concatenacion ASTERISCO STRING 	{
 
 expresion_aritmetica :lista_sumas
 
-lista_sumas : lista_sumas op_arit_p3 lista_productos	{
+lista_sumas : lista_sumas OP_ARIT_P3 lista_productos	{
 								if (isNumberType($3.type))
 								{	
 									sym_value_type tmp;
@@ -233,13 +233,6 @@ lista_sumas : lista_sumas op_arit_p3 lista_productos	{
 							yyerror(generateString("No se puede hacer operaciones aritmeticas con el tipo %s", 1, $1.type));
 						}
 					}
-
-op_arit_p3 : SUMA	{
-				$$ = strdup($1);
-			}
-	| RESTA	{
-			$$ = strdup($1);
-		}
 
 lista_productos : lista_productos op_arit_p2 lista_potencias 	{
 									if (isNumberType($3.type))
