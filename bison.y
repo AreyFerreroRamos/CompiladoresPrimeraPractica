@@ -223,9 +223,6 @@ lista_sumas : lista_sumas OP_ARIT_P3 lista_productos	{
 									yyerror(generateString("No se puede hacer operaciones aritmeticas con el tipo %s", 1, $3.type));
 								}
 							}
-		| OP_ARIT_P3 lista_productos	{
-
-						}
 		| lista_productos	{
 						if (isNumberType($1.type))
 						{
@@ -325,6 +322,12 @@ terminal_aritmetico : INTEGER	{
 		| FLOAT		{
 					$$ = createValueInfo(ftos($1), FLOAT64_T, NULL);
 				}
+		| OP_ARIT_P3 INTEGER	{
+						$$ = modifySign(createValueInfo(itos($2), INT32_T, NULL), $1);
+					}
+		| OP_ARIT_P3 FLOAT	{
+						$$ = modifySign(createValueInfo(ftos($2), FLOAT64_T, NULL), $1);
+					}
 		| id_arit 	{
 					$$ = createValueInfo($1.value, $1.type, $1.lexema);
 				}

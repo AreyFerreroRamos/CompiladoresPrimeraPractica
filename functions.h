@@ -96,6 +96,12 @@ void asignacionTensor(sym_value_type *result, int posicion, value_info v1, value
 /* FUNCIONES PARA REALIZAR OPERACIONES */
 
 /**
+ * Dado un operador y un operando comprueba si el operando es "-"
+ * y, en caso afirmativo, realiza la operación de cambio de signo sobre el operador.
+ */
+value_info modifySign(value_info v, char *operand);
+
+/**
  * Dados dos operadores y un operando realiza la operacion y la almacena
  * en finish_val.
  */

@@ -292,6 +292,22 @@ void asignacionTensor(sym_value_type *result, int posicion, value_info v1, value
 
 /* FUNCIONES PARA REALIZAR OPERACIONES */
 
+value_info modifySign(value_info v, char *operand)
+{
+    if (isSameType(operand, "-"))
+    {
+        if (isSameType(v.type, INT32_T))
+        {
+            v.value = itos(0 - atoi(v.value));
+        }
+        else
+        {
+            v.value = ftos(0 - atof(v.value));
+        }
+    }
+    return v;
+}
+
 void doAritmeticOperation(value_info v1, char *operand, value_info v2, value_info *finish_val)
 {
 	if (strcmp(v1.type, INT32_T) == 0 && strcmp(v2.type, INT32_T) == 0)
