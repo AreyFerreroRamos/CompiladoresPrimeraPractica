@@ -38,6 +38,7 @@ id      {lletra}({lletra}|{digit}|_({lletra}|{digit}))*
 		simpleDebug("\n\n", 0);
 		assignFounded = false;
 		corcheteOpenFounded = false;
+		return FIN_DE_LINEA;
     }
 
 

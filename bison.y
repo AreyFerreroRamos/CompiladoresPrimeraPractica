@@ -43,7 +43,7 @@
 	void *no_definit;
 }
 
-%token <no_definit> ASSIGN OP_BOOL_AND OP_BOOL_OR NEGACION COMA PUNTO_Y_COMA PARENTESIS_ABIERTO PARENTESIS_CERRADO CORCHETE_ABIERTO CORCHETE_CERRADO DIV LENGTH SIZE ZEROS ONES TRANSPOSE
+%token <no_definit> FIN_DE_LINEA ASSIGN OP_BOOL_AND OP_BOOL_OR NEGACION COMA PUNTO_Y_COMA PARENTESIS_ABIERTO PARENTESIS_CERRADO CORCHETE_ABIERTO CORCHETE_CERRADO DIV LENGTH SIZE ZEROS ONES TRANSPOSE
 %token <enter> INTEGER
 %token <real> FLOAT
 %token <cadena> STRING OP_ARIT_P1 OP_ARIT_P2 ASTERISCO OP_ARIT_P3 SUMA RESTA OP_RELACIONAL BOOLEAN
@@ -67,101 +67,101 @@ programa : lista_de_sentencias
 lista_de_sentencias : lista_de_sentencias sentencia | sentencia
 
 sentencia : asignacion
-	| expresion_aritmetica 	{
-					if ($1.value != NULL)
-					{
-						writeResult(generateString("La expresion aritmética es %s.", 1, $1.value));
-					}
-					else
-					{
-						sym_value_type entry = getEntry($1.lexema);
-						writeResult(printTensor($1.lexema, entry));
-						clearTmpTensorId();
-					}
-				}
-	| expresion_booleana 	{
-					writeResult(generateString("La expresion booleana es %s.", 1, $1.value));
-				}
-	| ID	{
-			sym_value_type entry = getEntry($1.lexema);
-			if (entry.num_dim > 0)
-			{
-				writeResult(printTensor($1.lexema, entry));
-			}
-			else
-			{
-				writeResult(generateString("%s actualmente vale %s.", 2, $1.lexema, (char *) entry.value));
-			}
-		}
-
-asignacion : ID ASSIGN expresion_aritmetica	{
-							if ($3.value != NULL)
+	| expresion_aritmetica FIN_DE_LINEA	{
+							if ($1.value != NULL)
 							{
-								sym_value_type entry = createSymValueType($3.type, $3.value, calculateSizeType($3.type), 0, NULL, NULL);
-								addOrUpdateEntry($1.lexema, entry);
-								writeResult(generateString("%s = %s", 2, $1.lexema, entry.value));
+								writeResult(generateString("La expresion aritmética es %s.", 1, $1.value));
 							}
 							else
-							{	/* Si la expresion aritmética es un tensor. */
-								sym_value_type entry = getEntry($3.lexema);
-								addOrUpdateEntry($1.lexema, entry);
+							{
+								sym_value_type entry = getEntry($1.lexema);
 								writeResult(printTensor($1.lexema, entry));
 								clearTmpTensorId();
 							}
 						}
-	| id ASSIGN expresion_aritmetica	{
-							if ($3.value != NULL)
-							{
-								sym_value_type entry = getEntry($1.lexema);
-								if (isSameType(entry.type, INT32_T))
-								{
-									if (isSameType($3.type, INT32_T))
-									{
-										((int *) entry.elements)[$1.calcIndex] = atoi($3.value);
-									}
-									else
-									{
-										((int *) entry.elements)[$1.calcIndex] = (int) atof($3.value);
-									}
-								}
-								else if (isSameType(entry.type, FLOAT64_T))
-								{
-									if (isSameType($3.type, INT32_T))
-									{
-										((float *) entry.elements)[$1.calcIndex] = atoi($3.value);
-									}
-									else
-									{
-										((float *) entry.elements)[$1.calcIndex] = atof($3.value);
-									}
-								}
-								addOrUpdateEntry($1.lexema, entry);
-								writeResult(generateString("%s[%i] = %s", 3, $1.lexema, $1.calcIndex, $3.value));
-							}
-							else
-							{
-								yyerror("No se puede asignar un tensor a un indice de un tensor");
-							}
+	| expresion_booleana FIN_DE_LINEA	{
+							writeResult(generateString("La expresion booleana es %s.", 1, $1.value));
 						}
-	| ID ASSIGN expresion_booleana	{
-						sym_value_type entry = createSymValueType($3.type, $3.value, strlen($3.value), 0, NULL, NULL);
-						addOrUpdateEntry($1.lexema, entry);
-						writeResult(generateString("%s = %s", 2, $1.lexema, (char *) entry.value));
+	| ID FIN_DE_LINEA	{
+					sym_value_type entry = getEntry($1.lexema);
+					if (entry.num_dim > 0)
+					{
+						writeResult(printTensor($1.lexema, entry));
 					}
-	| ID ASSIGN concatenacion	{
-						sym_value_type entry = createSymValueType(STRING_T, $3, strlen($3), 0, NULL, NULL);
-						addOrUpdateEntry($1.lexema, entry);
-						writeResult(generateString("%s = \"%s\"", 2, $1.lexema, (char *) entry.value));
+					else
+					{
+						writeResult(generateString("%s actualmente vale %s.", 2, $1.lexema, (char *) entry.value));
 					}
-	| ID ASSIGN tensor	{
-					invertVector(vector_dims_tensor, $3.dim);
-					sym_value_type entry = createSymValueType($3.type, NULL, calculateSizeType($3.type) * $3.num_elem, $3.dim, vector_dims_tensor, $3.elements);
-					addOrUpdateEntry($1.lexema, entry);
-					writeResult(printTensor($1.lexema, entry));
-					vector_dims_tensor = NULL;
-					ampliar_vector_dims = NULL;
-					num_dims_tensor = 0;
 				}
+
+asignacion : ID ASSIGN expresion_aritmetica FIN_DE_LINEA	{
+									if ($3.value != NULL)
+									{
+										sym_value_type entry = createSymValueType($3.type, $3.value, calculateSizeType($3.type), 0, NULL, NULL);
+										addOrUpdateEntry($1.lexema, entry);
+										writeResult(generateString("%s = %s", 2, $1.lexema, entry.value));
+									}
+									else
+									{	/* Si la expresion aritmética es un tensor. */
+										sym_value_type entry = getEntry($3.lexema);
+										addOrUpdateEntry($1.lexema, entry);
+										writeResult(printTensor($1.lexema, entry));
+										clearTmpTensorId();
+									}
+								}
+	| id ASSIGN expresion_aritmetica FIN_DE_LINEA	{
+								if ($3.value != NULL)
+								{
+									sym_value_type entry = getEntry($1.lexema);
+									if (isSameType(entry.type, INT32_T))
+									{
+										if (isSameType($3.type, INT32_T))
+										{
+											((int *) entry.elements)[$1.calcIndex] = atoi($3.value);
+										}
+										else
+										{
+											((int *) entry.elements)[$1.calcIndex] = (int) atof($3.value);
+										}
+									}
+									else if (isSameType(entry.type, FLOAT64_T))
+									{
+										if (isSameType($3.type, INT32_T))
+										{
+											((float *) entry.elements)[$1.calcIndex] = atoi($3.value);
+										}
+										else
+										{
+											((float *) entry.elements)[$1.calcIndex] = atof($3.value);
+										}
+									}
+									addOrUpdateEntry($1.lexema, entry);
+									writeResult(generateString("%s[%i] = %s", 3, $1.lexema, $1.calcIndex, $3.value));
+								}
+								else
+								{
+									yyerror("No se puede asignar un tensor a un indice de un tensor");
+								}
+							}
+	| ID ASSIGN expresion_booleana FIN_DE_LINEA	{
+								sym_value_type entry = createSymValueType($3.type, $3.value, strlen($3.value), 0, NULL, NULL);
+								addOrUpdateEntry($1.lexema, entry);
+								writeResult(generateString("%s = %s", 2, $1.lexema, (char *) entry.value));
+							}
+	| ID ASSIGN concatenacion FIN_DE_LINEA	{
+							sym_value_type entry = createSymValueType(STRING_T, $3, strlen($3), 0, NULL, NULL);
+							addOrUpdateEntry($1.lexema, entry);
+							writeResult(generateString("%s = \"%s\"", 2, $1.lexema, (char *) entry.value));
+						}
+	| ID ASSIGN tensor FIN_DE_LINEA	{
+						invertVector(vector_dims_tensor, $3.dim);
+						sym_value_type entry = createSymValueType($3.type, NULL, calculateSizeType($3.type) * $3.num_elem, $3.dim, vector_dims_tensor, $3.elements);
+						addOrUpdateEntry($1.lexema, entry);
+						writeResult(printTensor($1.lexema, entry));
+						vector_dims_tensor = NULL;
+						ampliar_vector_dims = NULL;
+						num_dims_tensor = 0;
+					}
 
 id : lista_indices CORCHETE_CERRADO	{
 						$$ = createTensorInfo($1.index_dim, $1.calcIndex, $1.lexema);
@@ -203,7 +203,7 @@ concatenacion : concatenacion ASTERISCO STRING 	{
 					$$ = strdup($1);
 				}
 
-expresion_aritmetica :lista_sumas
+expresion_aritmetica : lista_sumas
 
 lista_sumas : lista_sumas OP_ARIT_P3 lista_productos	{
 								if (isNumberType($3.type))
@@ -222,7 +222,10 @@ lista_sumas : lista_sumas OP_ARIT_P3 lista_productos	{
 								{
 									yyerror(generateString("No se puede hacer operaciones aritmeticas con el tipo %s", 1, $3.type));
 								}
-							}	
+							}
+		| OP_ARIT_P3 lista_productos	{
+
+						}
 		| lista_productos	{
 						if (isNumberType($1.type))
 						{
